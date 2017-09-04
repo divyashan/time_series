@@ -6,14 +6,13 @@ import input_data
 import math
 import sys
 
-from readUcr import UCRDataset
+from parse_dataset.readUcr import UCRDataset
 from itertools import product
 import matplotlib.pyplot as plt
 sys.path.insert(0, '/Users/divya/Documents/MEng/')
 from time_series.tsne_python import tsne
 
-#from cnn_helper import conv_net, weights, biases
-from cnn_helper_2 import build_conv_net
+from cnn_helper import build_conv_net
 import scipy
 
 import pdb

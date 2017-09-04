@@ -6,7 +6,7 @@ import input_data
 import math
 import sys
 
-from readUcr import UCRDataset
+from parse_dataset.readUcr import UCRDataset
 from itertools import product
 
 

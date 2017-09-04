@@ -9,8 +9,8 @@ import sys
 sys.path.insert(0, '/Users/divya/Documents/MEng/')
 
 from time_series.tsne_python import tsne
-from readUcr import UCRDataset
-from readEEG import loadEEG
+from parse_dataset.readUcr import UCRDataset
+from parse_dataset.readEEG import loadEEG
 
 POOL_PCTG = .1
 

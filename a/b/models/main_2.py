@@ -6,7 +6,7 @@ import input_data
 import math
 import sys
 
-from readUcr import UCRDataset
+from parse_dataset.readUcr import UCRDataset
 from itertools import product
 from utils import plot_filters, normalize_rows, evaluate_test_embedding, classify_sample, next_batch, dist
 

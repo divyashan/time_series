@@ -1,157 +1,81 @@
-'''
-A Convolutional Network implementation example using TensorFlow library.
-This example is using the MNIST database of handwritten digits
-(http://yann.lecun.com/exdb/mnist/)
-Author: Aymeric Damien
-Project: https://github.com/aymericdamien/TensorFlow-Examples/
-'''
 
-from __future__ import print_function
-
+"""
+Created on Tue Mar 22 10:43:29 2016
+@author: Rob Romijnders
+"""
+import numpy as np
 import tensorflow as tf
+import matplotlib.pyplot as plt
+from tensorflow.python.framework import ops
+from tensorflow.python.ops import clip_ops
+import pdb
 
-# Import MNIST data
-from tensorflow.examples.tutorials.mnist import input_data
-mnist = input_data.read_data_sets("/tmp/data/", one_hot=True)
+def bias_variable(shape, name):
+  initial = tf.constant(0.1, shape=shape)
+  return tf.get_variable(name, initializer=initial)
+  #return tf.Variable(initial, name = name)
 
-# Parameters
-learning_rate = 0.001
-training_iters = 200000
-batch_size = 128
-display_step = 10
+def conv2d(x, W):
+  return tf.nn.conv2d(x, W, strides=[1, 1, 1, 1], padding='SAME')
 
-# Network Parameters
-n_input = 784 # MNIST data input (img shape: 28*28)
-n_classes = 32 # MNIST total classes (0-9 digits)
-dropout = 0.75 # Dropout, probability to keep units
-
-# tf Graph input
-x = tf.placeholder(tf.float32, [None, n_input])
-y = tf.placeholder(tf.float32, [None, n_classes])
-keep_prob = tf.placeholder(tf.float32) #dropout (keep probability)
+def max_pool_2x2(x, pool_width):
+  return tf.nn.max_pool(x, ksize=[1, pool_width, 1, 1],
+                        strides=[1, 1, 1, 1], padding='SAME')
 
 
+num_filt_1 = 12     #Number of filters in first conv layer
+num_filt_2 = 8   #Number of filters in second conv layer
+num_filt_3 = 4      #Number of filters in thirs conv layer
+num_fc_1 = 40       #Number of neurons in fully connected layer
+num_fc_2 = 20
+max_iterations = 20000
+plot_row = 5        #How many rows do you want to plot in the visualization
+learning_rate = 2e-5
+input_norm = False   # Do you want z-score input normalization?
+
+def build_conv_net(x, bn_train, dropout, ts_length, num_classes, pool_width, reuse=False):
+  initializer = tf.contrib.layers.xavier_initializer()
+  """Build the graph"""
+  # ewma is the decay for which we update the moving average of the
+  # mean and variance in the batch-norm layers
+
+  x_image = tf.reshape(x, [-1,ts_length, 1, 1])
+  keep_prob = dropout
+
+  W_conv1 = tf.get_variable("Conv_Layer_1", shape=[5,1, 1, num_filt_1],initializer=initializer)
+  b_conv1 = bias_variable([num_filt_1], 'bias_for_Conv_Layer_1')
+  a_conv1 = conv2d(x_image, W_conv1) + b_conv1
+  a_maxp1 = max_pool_2x2(a_conv1, pool_width)
+  
+  h_conv1 = tf.nn.relu(a_maxp1)
+
+  """
+  
+  W_conv2 = tf.get_variable("Conv_Layer_2", shape=[4,1, num_filt_1, num_filt_2],initializer=initializer)
+  b_conv2 = bias_variable([num_filt_2], 'bias_for_Conv_Layer_2')
+  a_conv2 = conv2d(h_conv1, W_conv2) + b_conv2
+  a_maxp2 = max_pool_2x2(a_conv2, pool_width)
 
 
+  h_conv2 = tf.nn.relu(a_maxp2)
+  """
+  W_fc1 = tf.get_variable("Fully_Connected_layer_1", shape=[int(np.ceil(ts_length))*num_filt_1, num_fc_1],initializer=initializer)
+  b_fc1 = bias_variable([num_fc_1], 'bias_for_Fully_Connected_Layer_1')
+  h_conv2_flat = tf.reshape(h_conv1, [-1, int(np.ceil(ts_length))*num_filt_1])
 
+  h_fc1 = tf.nn.relu(tf.matmul(h_conv2_flat, W_fc1) + b_fc1)
 
+  h_fc1_drop = tf.nn.dropout(h_fc1, keep_prob)
+  W_fc2 = tf.get_variable("W_fc2", shape=[num_fc_1, num_fc_2],initializer=initializer)
+  b_fc2 = tf.get_variable('b_fc2', initializer=tf.constant(0.1, shape=[num_fc_2]))
+  h_fc2 = tf.matmul(h_fc1_drop, W_fc2) + b_fc2
 
-# Create some wrappers for simplicity
-def conv2d(x, W, strides=1):
-    # Conv2D wrapper, with bias and relu activation
-    x = tf.nn.conv2d(x, W, strides=[1, strides, strides, 1], padding='SAME')
-    return x
-
-
-def maxpool2d(x, k=2):
-    # MaxPool2D wrapper
-    return tf.nn.max_pool(x, ksize=[1, k, k, 1], strides=[1, k, k, 1],
-                          padding='SAME')
-
-
-# Create model
-def conv_net(x, weights, biases, dropout, D):
-    # Reshape input picture
-    num_filt_1 = 32
-    num_filt_2 = 64
-    x = tf.reshape(x, shape=[-1, D, 1, 1])
-
-    # Convolution Layer
-    W_conv1 = weights['wc1']
-    b_conv1 = weights['bc1']
-    a_conv1 = conv2d(x, W_conv1) + b_conv1
-
-    a_conv1 = tf.contrib.layers.batch_norm(a_conv1, is_training=bn_train,updates_collections=None)
-    h_conv1 = tf.nn.relu(a_conv1)
-
-    # Max Pooling (down-sampling)
-    #conv1 = maxpool2d(conv1, k=2)
-
-    # Convolution Layer
-    W_conv2 = weights['wc2']
-    b_conv2 = weights['bc1']
-    a_conv2 = conv2d(h_conv1, W_conv2) + b_conv2
-
-    a_conv2 = tf.contrib.layers.batch_norm(a_conv2, is_training=bn_train,updates_collections=None)
-    h_conv2 = tf.nn.relu(a_conv2)
-    # Max Pooling (down-sampling)
-    W_fc1 = tf.get_variable("Fully_Connected_layer_1", shape=[D*num_filt_2, num_fc_1],initializer=initializer)
-    b_fc1 = bias_variable([num_fc_1], 'bias_for_Fully_Connected_Layer_1')
-    h_conv3_flat = tf.reshape(h_conv2, [-1, D*num_filt_2])
-    h_fc1 = tf.nn.relu(tf.matmul(h_conv3_flat, W_fc1) + b_fc1)
-
-    # Fully connected layer
-    # Reshape conv2 output to fit fully connected layer input
-    fc1 = tf.reshape(conv2, [-1, weights['wd1'].get_shape().as_list()[0]])
-    fc1 = tf.add(tf.matmul(fc1, weights['wd1']), biases['bd1'])
-    fc1 = tf.nn.relu(fc1)
-    # Apply Dropout
-    fc1 = tf.nn.dropout(fc1, dropout)
-
-    # Output, class prediction
-    out = tf.add(tf.matmul(fc1, weights['out']), biases['out'])
-    return out
-
-# Store layers weight & bias
-initializer = tf.contrib.layers.xavier_initializer()
-
-weights = {
-    # 5x5 conv, 1 input, 32 outputs
-    'wc1': tf.get_variable('wc1', shape=[5, 1, 1, 32], initializer=initializer),
-    # 5x5 conv, 32 inputs, 64 outputs
-    'wc2': tf.get_variable('wc2', shape=[4, 1, 32, 64], initializer=initializer),
-    # fully connected, 7*7*64 inputs, 1024 outputs
-    'wd1': tf.get_variable('wd1', shape=[10240, 1024], initializer=initializer),
-    # 1024 inputs, 10 outputs (class prediction)
-    'out': tf.get_variable('out', [1024, n_classes], initializer=initializer)
-}
-
-biases = {
-    'bc1': tf.Variable(tf.constant(.1, shape=[32])),
-    'bc2': tf.Variable(tf.constant(.1, shape=[64])),
-    'bd1': tf.Variable(tf.constant(.1, shape=[1024])),
-    'out': tf.Variable(tf.constant(.1, shape=[nclasses]))
-}
-"""
-# Construct model
-D = 784
-pred = conv_net(x, weights, biases, keep_prob, D)
-
-# Define loss and optimizer
-cost = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(logits=pred, labels=y))
-optimizer = tf.train.AdamOptimizer(learning_rate=learning_rate).minimize(cost)
-
-# Evaluate model
-correct_pred = tf.equal(tf.argmax(pred, 1), tf.argmax(y, 1))
-accuracy = tf.reduce_mean(tf.cast(correct_pred, tf.float32))
-
-# Initializing the variables
-init = tf.global_variables_initializer()
-
-# Launch the graph
-with tf.Session() as sess:
-    sess.run(init)
-    step = 1
-    # Keep training until reach max iterations
-    while step * batch_size < training_iters:
-        batch_x, batch_y = mnist.train.next_batch(batch_size)
-        # Run optimization op (backprop)
-        sess.run(optimizer, feed_dict={x: batch_x, y: batch_y,
-                                       keep_prob: dropout})
-        if step % display_step == 0:
-            # Calculate batch loss and accuracy
-            loss, acc = sess.run([cost, accuracy], feed_dict={x: batch_x,
-                                                              y: batch_y,
-                                                              keep_prob: 1.})
-            print("Iter " + str(step*batch_size) + ", Minibatch Loss= " + \
-                  "{:.6f}".format(loss) + ", Training Accuracy= " + \
-                  "{:.5f}".format(acc))
-        step += 1
-    print("Optimization Finished!")
-
-    # Calculate accuracy for 256 mnist test images
-    print("Testing Accuracy:", \
-        sess.run(accuracy, feed_dict={x: mnist.test.images[:256],
-                                      y: mnist.test.labels[:256],
-                                      keep_prob: 1.}))
-"""
+  h_fc2_drop = tf.nn.dropout(h_fc2, keep_prob)
+  W_fc3 = tf.get_variable("W_fc3", shape=[num_fc_2, num_classes],initializer=initializer)
+  b_fc3 = tf.get_variable('b_fc3', initializer=tf.constant(0.1, shape=[num_classes]))
+  h_fc3 = tf.matmul(h_fc2_drop, W_fc3) + b_fc3
+  
+  #filter_1_summary = tf.summary.image("Filter_1", W_conv1)
+  #filter_2_summary = tf.summary.image("Filter_2", W_conv2)
+  filters = [W_conv1]
+  return h_fc3, filters

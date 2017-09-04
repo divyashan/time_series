@@ -8,7 +8,7 @@ import sys
 
 from readUcr import UCRDataset
 from itertools import product
-from cnn_helper_2 import build_conv_net
+from cnn_helper import build_conv_net
 import matplotlib.pyplot as plt
 from utils import plot_filters, normalize_rows, evaluate_test_embedding, classify_sample, next_batch, create_triplets
 
