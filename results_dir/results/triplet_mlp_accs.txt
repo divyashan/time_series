@@ -1,0 +1,12 @@
+Gun_Point	92.67
+FaceFour	85.23
+Lighting2	54.1
+Car	90
+Beef	94.1
+Coffee	79.4
+Plane	79.4
+BeetleFly	78.7
+BirdChicken	85
+ArrowHead	90
+Herring	59.38
+Lighting7	58.9

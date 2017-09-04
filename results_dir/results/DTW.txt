@@ -1,0 +1,85 @@
+50Words	69.0
+Adiac	60.4
+ArrowHead	70.3
+Beef	63.3
+BeetleFly	70.0
+BirdChicken	75.0
+CBF	99.7
+Car	73.3
+ChlorineConcentration	64.8
+CinC_ECG_torso	65.1
+Coffee	100.0
+Computers	70.0
+Cricket_X	75.4
+Cricket_Y	74.4
+Cricket_Z	75.4
+DiatomSizeReduction	96.7
+DistalPhalanxOutlineAgeGroup	79.2
+DistalPhalanxOutlineCorrect	76.8
+DistalPhalanxTW	71.0
+ECG	77.0
+ECG5000	92.4
+ECGFiveDays	76.8
+Earthquakes	74.2
+ElectricDevices	60.1
+FaceAll	80.8
+FaceFour	83.0
+FacesUCR	90.5
+Fish	82.3
+FordA	56.2
+FordB	59.4
+Gun_Point	90.7
+Ham	46.7
+HandOutlines	79.8
+Haptics	37.7
+Herring	53.1
+InlineSkate	38.4
+InsectWingbeatSound	35.5
+ItalyPowerDemand	95.0
+LargeKitchenAppliances	79.5
+Lighting2	86.9
+Lighting7	72.6
+MALLAT	93.4
+Meat	93.3
+MedicalImages	73.7
+MiddlePhalanxOutlineAgeGroup	75.0
+MiddlePhalanxOutlineCorrect	64.8
+MiddlePhalanxTW	58.4
+MoteStrain	83.5
+Non-Invasive Fetal ECG Thorax1	79.1
+Non-Invasive Fetal ECG Thorax2	86.5
+OSU Leaf	59.1
+OliveOil Tony Bagnall	83.3
+PhalangesOutlinesCorrect	72.8
+Phoneme (readme)	22.8
+Plane	100.0
+ProximalPhalanxOutlineAgeGroup	80.5
+ProximalPhalanxOutlineCorrect	78.4
+ProximalPhalanxTW	73.7
+RefrigerationDevices	46.4
+ScreenType	39.7
+ShapeletSim	65.0
+ShapesAll	76.8
+SmallKitchenAppliances	64.3
+SonyAIBORobot Surface	72.5
+SonyAIBORobot SurfaceII	83.1
+StarLightCurves	90.7
+Strawberry	94.0
+Swedish Leaf	79.2
+Symbols	95.0
+Synthetic Control	99.3
+ToeSegmentation1	77.2
+ToeSegmentation2	83.8
+Trace	100.0
+Two Patterns	100.0
+TwoLeadECG	90.4
+UWaveGestureLibraryAll	89.2
+Wafer	98.0
+Wine	57.4
+WordSynonyms	64.9
+Worms	46.4
+WormsTwoClass	67.0
+Yoga	83.6
+uWaveGestureLibrary_X	72.7
+uWaveGestureLibrary_Y	63.4
+uWaveGestureLibrary_Z	65.8

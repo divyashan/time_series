@@ -1,0 +1,12 @@
+Lighting7	100.00	80.63
+Gun_Point	100.00	86.79
+FaceFour	100.00	83.96
+Lighting2	100.00	54.32
+Car	98.87	84.97
+Beef	50.34	45.29
+Coffee	48.15	48.41
+Plane	100.00	98.52
+BeetleFly	83.16	70.53
+BirdChicken	76.84	48.42
+ArrowHead	84.76	72.06
+Herring	52.08	50.99

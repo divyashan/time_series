@@ -1,0 +1,59 @@
+50Words	0.734065934066
+Adiac	0.572890025575
+ArrowHead	0.434285714286
+Beef Tony Bagnall	0.566666666667
+BeetleFly	0.5
+BirdChicken	0.45
+CBF	0.483333333333
+Car	0.236666666667
+ChlorineConcentration	0.660416666667
+CinC_ECG_torso	0.497101449275
+Coffee Tony Bagnall	0.107142857143
+Computers	0.508
+Cricket_X	0.828205128205
+Cricket_Y	0.84358974359
+Cricket_Z	0.817948717949
+DiatomSizeReduction	0.0424836601307
+DistalPhalanxOutlineAgeGroup	0.1625
+DistalPhalanxOutlineCorrect	0.543333333333
+DistalPhalanxTW	0.315
+ECG	0.413043478261
+ECG5000	0.19
+ECGFiveDays	0.166666666667
+Earthquakes	0.218350754936
+ElectricDevices	0.623135780054
+Face (all)	0.530769230769
+Face (four)	0.136363636364
+FacesUCR	0.426829268293
+Fish	0.508571428571
+FordA	0.487364620939
+FordB	0.491749174917
+Gun-Point	0.393333333333
+Ham	0.32380952381
+HandOutlines	0.188
+Haptics	0.633116883117
+Herring	0.515625
+InlineSkate	0.825454545455
+InsectWingbeatSound	0.555050505051
+ItalyPowerDemand	0.227405247813
+LargeKitchenAppliances	0.533333333333
+Lightning-2	0.508196721311
+Lightning-7	0.369863013699
+MALLAT	0.152665245203
+Meat	0.133333333333
+MedicalImages	0.498684210526
+MiddlePhalanxOutlineAgeGroup	0.2775
+MiddlePhalanxOutlineCorrect	0.461666666667
+MiddlePhalanxTW	0.385964912281
+MoteStrain	0.195686900958
+Non-Invasive Fetal ECG Thorax1	0.319083969466
+Non-Invasive Fetal ECG Thorax2	0.242239185751
+OSU Leaf	0.166666666667
+OliveOil Tony Bagnall	0.698347107438
+PhalangesOutlinesCorrect	0.402097902098
+Phoneme (readme)	0.923523206751
+Plane	0.0571428571429
+ProximalPhalanxOutlineAgeGroup	0.170731707317
+ProximalPhalanxOutlineCorrect	0.360824742268
+ProximalPhalanxTW	0.285
+RefrigerationDevices	0.637333333333

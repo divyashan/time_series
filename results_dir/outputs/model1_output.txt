@@ -1,0 +1,96 @@
+../ucr_data/50words
+Percent incorrect:  0.432967032967
+../ucr_data/Adiac
+Percent incorrect:  0.498721227621
+../ucr_data/ArrowHead
+Percent incorrect:  0.457142857143
+../ucr_data/Beef
+Percent incorrect:  0.466666666667
+../ucr_data/BeetleFly
+Percent incorrect:  0.5
+../ucr_data/BirdChicken
+Percent incorrect:  0.45
+../ucr_data/Car
+Percent incorrect:  0.366666666667
+../ucr_data/CBF
+Percent incorrect:  0.24
+../ucr_data/ChlorineConcentration
+Percent incorrect:  0.683854166667
+../ucr_data/CinC_ECG_torso
+Percent incorrect:  0.550724637681
+../ucr_data/Coffee
+Percent incorrect:  0.0714285714286
+../ucr_data/Computers
+Percent incorrect:  0.564
+../ucr_data/Cricket_X
+Percent incorrect:  0.761538461538
+../ucr_data/Cricket_Y
+Percent incorrect:  0.671794871795
+../ucr_data/Cricket_Z
+Percent incorrect:  0.741025641026
+../ucr_data/DiatomSizeReduction
+Percent incorrect:  0.0392156862745
+../ucr_data/DistalPhalanxOutlineAgeGroup
+Percent incorrect:  0.17
+../ucr_data/DistalPhalanxOutlineCorrect
+Percent incorrect:  0.521666666667
+../ucr_data/DistalPhalanxTW
+Percent incorrect:  0.2325
+../ucr_data/Earthquakes
+Percent incorrect:  0.785714285714
+../ucr_data/ECG200
+Percent incorrect:  0.22
+../ucr_data/ECG5000
+Percent incorrect:  0.146888888889
+../ucr_data/ECGFiveDays
+Percent incorrect:  0.226480836237
+../ucr_data/ElectricDevices
+Percent incorrect:  0.675917520425
+../ucr_data/FaceAll
+Percent incorrect:  0.468047337278
+../ucr_data/FaceFour
+Percent incorrect:  0.0795454545455
+../ucr_data/FacesUCR
+Percent incorrect:  0.453170731707
+../ucr_data/FISH
+Percent incorrect:  0.411428571429
+../ucr_data/FordA
+Percent incorrect:  0.490974729242
+../ucr_data/FordB
+Percent incorrect:  0.513751375138
+../ucr_data/Gun_Point
+Percent incorrect:  0.26
+../ucr_data/Ham
+Percent incorrect:  0.209523809524
+../ucr_data/HandOutlines
+Percent incorrect:  0.357
+../ucr_data/Haptics
+Percent incorrect:  0.600649350649
+../ucr_data/Herring
+Percent incorrect:  0.546875
+../ucr_data/InlineSkate
+Percent incorrect:  0.807272727273
+../ucr_data/InsectWingbeatSound
+Percent incorrect:  0.389393939394
+../ucr_data/ItalyPowerDemand
+Percent incorrect:  0.0932944606414
+../ucr_data/LargeKitchenAppliances
+Percent incorrect:  0.554666666667
+../ucr_data/Lighting2
+Percent incorrect:  0.27868852459
+../ucr_data/Lighting7
+Percent incorrect:  0.301369863014
+../ucr_data/MALLAT
+Percent incorrect:  0.0298507462687
+../ucr_data/Meat
+Percent incorrect:  0.116666666667
+../ucr_data/MedicalImages
+Percent incorrect:  0.631578947368
+../ucr_data/MiddlePhalanxOutlineAgeGroup
+Percent incorrect:  0.265
+../ucr_data/MiddlePhalanxOutlineCorrect
+Percent incorrect:  0.523333333333
+../ucr_data/MiddlePhalanxTW
+Percent incorrect:  0.418546365915
+../ucr_data/MoteStrain
+Percent incorrect:  0.16054313099
