@@ -1,0 +1,28 @@
+epoch 0 loss 0.14780 r_loss 0.01972 c_loss 0.12808 acc 0.41 avg_cos 0.88
+Accuracy given NN approach 78.67
+Val Accuracy given NN approach 68.00
+epoch 50 loss 0.04148 r_loss 0.00841 c_loss 0.03307 acc 0.50 avg_cos 0.61
+Accuracy given NN approach 96.00
+Val Accuracy given NN approach 96.00
+epoch 100 loss 0.01849 r_loss 0.00536 c_loss 0.01313 acc 0.50 avg_cos 0.55
+Accuracy given NN approach 97.33
+Val Accuracy given NN approach 96.00
+epoch 150 loss 0.01855 r_loss 0.00369 c_loss 0.01486 acc 0.48 avg_cos 0.50
+Accuracy given NN approach 97.33
+Val Accuracy given NN approach 96.00
+epoch 200 loss 0.01394 r_loss 0.00301 c_loss 0.01093 acc 0.47 avg_cos 0.50
+Accuracy given NN approach 97.33
+Val Accuracy given NN approach 97.33
+epoch 250 loss 0.01252 r_loss 0.00233 c_loss 0.01020 acc 0.41 avg_cos 0.48
+Accuracy given NN approach 97.33
+Val Accuracy given NN approach 94.67
+Gun_Point	Gun_Point
+epoch 0 loss 0.56232 r_loss 0.19001 c_loss 0.37232 acc 0.33 avg_cos 0.72
+Accuracy given NN approach 56.82
+Val Accuracy given NN approach 61.36
+epoch 50 loss 0.04503 r_loss 0.01392 c_loss 0.03111 acc 0.19 avg_cos 0.43
+Accuracy given NN approach 90.91
+Val Accuracy given NN approach 86.36
+epoch 100 loss 0.03499 r_loss 0.00760 c_loss 0.02740 acc 0.36 avg_cos 0.28
+Accuracy given NN approach 95.45
+Val Accuracy given NN approach 90.91
