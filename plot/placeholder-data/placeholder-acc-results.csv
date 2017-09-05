@@ -1,0 +1,7 @@
+dataset,algorithm,accuracy
+UCR,Proposed,.99
+UCR,decade,.76
+UCR,DTW,.74
+EEG,Proposed,.89
+EEG,decade,.66
+EEG,DTW,.64
