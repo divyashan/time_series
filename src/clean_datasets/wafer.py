@@ -7,7 +7,7 @@ from joblib import Memory
 from .. import paths
 from ..utils import files
 
-_memory = Memory('.', verbose=1)
+_memory = Memory('.', verbose=0)
 
 NORMAL_DIR = os.path.join(paths.WAFER, 'normal')
 ABNORMAL_DIR = os.path.join(paths.WAFER, 'abnormal')

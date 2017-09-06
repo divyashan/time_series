@@ -7,7 +7,7 @@ from joblib import Memory
 from .. import paths
 from ..utils import files
 
-_memory = Memory('.', verbose=1)
+_memory = Memory('.', verbose=0)
 
 NORMAL_DIR = os.path.join(paths.ECG, 'normal')
 ABNORMAL_DIR = os.path.join(paths.ECG, 'abnormal')
@@ -50,19 +50,10 @@ def all_data():
     # y_abnormal = np.zeros(len(ts_list_abnormal), dtype=np.int32)
 
 
-def all_X():
-    return all_data()[0]
-
-
-def all_labels():
-    return all_data()[1]
-
-
 # ================================================================ main
 
 def main():
-    y = all_labels()
-    X = all_X()
+    X, y = all_data()
 
     print "inital ts shapes: ", [ts.shape for ts in X[0:200:20]]
     print "inital labels: ", y[0:200:20]

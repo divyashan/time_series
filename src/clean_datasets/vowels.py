@@ -6,7 +6,7 @@ from joblib import Memory
 
 from .. import paths
 
-_memory = Memory('.', verbose=1)
+_memory = Memory('.', verbose=0)
 
 TRAIN_FILE = os.path.join(paths.VOWELS, 'ae.train.txt')
 TEST_FILE = os.path.join(paths.VOWELS, 'ae.test.txt')
@@ -54,14 +54,20 @@ def _read_examples(path, ndims=12, expected_count=None):
     return [np.fromstring(s, sep=' ').reshape(-1, ndims) for s in examples_strs]
 
 
-# @_memory.cache
 def train_X():
     return _read_examples(TRAIN_FILE)
 
 
-# @_memory.cache
 def test_X():
     return _read_examples(TEST_FILE)
+
+
+def train_data():
+    return train_X(), train_labels()
+
+
+def test_data():
+    return test_X(), test_labels()
 
 
 # ================================================================ main

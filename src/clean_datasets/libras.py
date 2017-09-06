@@ -6,7 +6,7 @@ from joblib import Memory
 
 from .. import paths
 
-_memory = Memory('.', verbose=1)
+_memory = Memory('.', verbose=0)
 
 DATA_FILE = os.path.join(paths.LIBRAS, 'movement_libras.data.txt')
 

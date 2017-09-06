@@ -7,10 +7,10 @@ from joblib import Memory
 from .. import paths
 # from ..utils import files
 
-_memory = Memory('.', verbose=1)
+_memory = Memory('.', verbose=0)
 
 
-@_memory.cache
+# @_memory.cache
 def _all_data_with_name(name, expected_count=None):
     path = os.path.join(paths.ROBOT_FAILURE, name + '.data.txt')
     # print "path: ", path
@@ -72,7 +72,7 @@ class lp5:
 # ================================================================ main
 
 def main():
-    for clz in [lp1, lp2, lp3, lp4, lp4]:
+    for clz in [lp1, lp2, lp3, lp4, lp5]:
         X, y = clz.all_data()
         print "inital ts shapes: ", [ts.shape for ts in X[0:100:10]]
         print "inital labels: ", y[0:100:10]

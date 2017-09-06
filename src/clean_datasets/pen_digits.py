@@ -6,7 +6,7 @@ from joblib import Memory
 
 from .. import paths
 
-_memory = Memory('.', verbose=1)
+_memory = Memory('.', verbose=0)
 
 TRAIN_FILE = os.path.join(paths.PEN_DIGITS, 'pendigits.tra')
 TEST_FILE = os.path.join(paths.PEN_DIGITS, 'pendigits.tes.txt')
