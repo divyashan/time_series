@@ -88,7 +88,7 @@ def debug_loss(anchor, positive, negative, alpha=1., intra_class=.01, inter_clas
     """
     basic_loss = tf.maximum(tf.add(tf.subtract(pos_dist,neg_dist), alpha),0)
     loss = tf.reduce_mean(tf.maximum(basic_loss, 0.0), 0)
-
+    #"""
       
     return pos_dist, neg_dist
 
@@ -128,6 +128,7 @@ def compute_accuracy(triplets):
     return acc
 
 tf.reset_default_graph()
+"""
 ucr_dataset = UCRDataset("../ucr_data/" + sys.argv[1]) 
 
 X_train = ucr_dataset.Xtrain
@@ -136,7 +137,7 @@ X_val = ucr_dataset.Xtest[:2]
 y_val = ucr_dataset.Ytest[:2]
 X_test = ucr_dataset.Xtest[2:]
 y_test = ucr_dataset.Ytest[2:]
-
+"""
 X_train, y_train, X_test, y_test = loadEEG()
 X_val = X_test[:2]
 y_val = y_test[:2]

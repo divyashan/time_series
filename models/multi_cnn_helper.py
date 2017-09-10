@@ -33,11 +33,14 @@ plot_row = 5        #How many rows do you want to plot in the visualization
 learning_rate = 2e-5
 input_norm = False   # Do you want z-score input normalization?
 
-def build_conv_net(x, bn_train, dropout, ts_length, num_classes, pool_width, reuse=False):
+def build_conv_net(x, bn_train, dropout, ts_length, num_classes, pool_width, layer_size_1=40, layer_size_2=20, reuse=False):
   initializer = tf.contrib.layers.xavier_initializer()
   """Build the graph"""
   # ewma is the decay for which we update the moving average of the
   # mean and variance in the batch-norm layers
+
+  num_fc_1 = layer_size_1
+  num_fc_2 = layer_size_2 
 
   # TODO: take away this
   x_image = tf.reshape(x, [-1,64, ts_length, 1])
