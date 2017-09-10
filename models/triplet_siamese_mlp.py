@@ -12,7 +12,7 @@ from utils import plot_filters, normalize_rows, evaluate_test_embedding, classif
 
 
 
-sys.path.insert(0, '/Users/divya/Documents/MEng/')
+sys.path.insert(0, '../../')
 from time_series.tsne_python import tsne
 
 

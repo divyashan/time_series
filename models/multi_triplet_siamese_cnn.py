@@ -11,7 +11,7 @@ from multi_cnn_helper import build_conv_net
 import matplotlib.pyplot as plt
 from utils import plot_filters, normalize_rows, evaluate_test_embedding, classify_sample, next_batch, create_triplets, create_triplet_idxs, next_batch_from_idx
 
-sys.path.insert(0, '/Users/divya/Documents/MEng/')
+sys.path.insert(0, '../../')
 
 from time_series.tsne_python import tsne
 from time_series.parse_dataset.readUcr import UCRDataset

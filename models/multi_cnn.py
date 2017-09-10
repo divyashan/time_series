@@ -6,7 +6,7 @@ from tensorflow.python.ops import clip_ops
 import pdb
 import sys
 
-sys.path.insert(0, '/Users/divya/Documents/MEng/')
+sys.path.insert(0, '../../')
 from time_series.src.clean_datasets import cv_splits_for_dataset
 
 from time_series.tsne_python import tsne

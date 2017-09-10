@@ -9,7 +9,7 @@ import sys
 from parse_dataset.readUcr import UCRDataset
 from itertools import product
 import matplotlib.pyplot as plt
-sys.path.insert(0, '/Users/divya/Documents/MEng/')
+sys.path.insert(0, '../../')
 from time_series.tsne_python import tsne
 
 from cnn_helper import build_conv_net
