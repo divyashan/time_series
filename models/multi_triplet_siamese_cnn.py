@@ -1,8 +1,8 @@
 import random
 import numpy as np
 import time
-import tensorflow as tf 
-import math 
+import tensorflow as tf
+import math
 import sys
 
 
@@ -13,7 +13,7 @@ from utils import plot_filters, normalize_rows, evaluate_test_embedding, classif
 
 sys.path.insert(0, '../../')
 
-from time_series.tsne_python import tsne
+# from time_series.tsne_python import tsne
 from time_series.parse_dataset.readUcr import UCRDataset
 from time_series.parse_dataset.readEEG import loadEEG
 
@@ -39,20 +39,20 @@ def regularizer(model1, model2, model3):
 
 def triplet_loss(anchor, positive, negative, alpha=1):
     """Calculate the triplet loss according to the FaceNet paper
-    
+
     Args:
       anchor: the embeddings for the anchor images.
       positive: the embeddings for the positive images.
       negative: the embeddings for the negative images.
-  
+
     Returns:
       the triplet loss according to the FaceNet paper as a float tensor.
     """
     with tf.variable_scope('triplet_loss'):
-        
+
         pos_dist = tf.reduce_sum(tf.square(tf.subtract(anchor, positive)), 1)
         neg_dist = tf.reduce_sum(tf.square(tf.subtract(anchor, negative)), 1)
-        
+
         #"""
         e_pos_dist = tf.exp(pos_dist)
         e_neg_dist = tf.exp(neg_dist)
@@ -64,23 +64,23 @@ def triplet_loss(anchor, positive, negative, alpha=1):
         basic_loss = tf.maximum(tf.add(tf.subtract(pos_dist,neg_dist), alpha),0)
         loss = tf.reduce_mean(tf.maximum(basic_loss, 0.0), 0)
         #"""
-      
+
     return loss
 
 def debug_loss(anchor, positive, negative, alpha=1., intra_class=.01, inter_class=1):
     """Calculate the triplet loss according to the FaceNet paper
-    
+
     Args:
       anchor: the embeddings for the anchor images.
       positive: the embeddings for the positive images.
       negative: the embeddings for the negative images.
-  
+
     Returns:
       the triplet loss according to the FaceNet paper as a float tensor.
     """
     pos_dist = tf.sqrt(tf.reduce_sum(tf.square(tf.subtract(anchor, positive)), 1))
     neg_dist = tf.sqrt(tf.reduce_sum(tf.square(tf.subtract(anchor, negative)), 1))
-    
+
     #"""
     e_pos_dist = tf.exp(pos_dist)
     e_neg_dist = tf.exp(neg_dist)
@@ -92,12 +92,12 @@ def debug_loss(anchor, positive, negative, alpha=1., intra_class=.01, inter_clas
     basic_loss = tf.maximum(tf.add(tf.subtract(pos_dist,neg_dist), alpha),0)
     loss = tf.reduce_mean(tf.maximum(basic_loss, 0.0), 0)
     """
-      
+
     return e_pos_dist, e_neg_dist
 
 def new_loss(anchor, positive, negative, alpha=1, l=.01):
     with tf.variable_scope('triplet_loss'):
-        
+
         pos_dist = tf.reduce_sum(tf.square(tf.subtract(anchor, positive)), 1)/4.0
         neg_dist = tf.reduce_sum(tf.square(tf.subtract(anchor, negative)), 1)/4.0
 
@@ -108,11 +108,11 @@ def new_loss(anchor, positive, negative, alpha=1, l=.01):
         sigma_neg = tf.reduce_mean(tf.square(neg_dist - mu_neg))
 
         loss = sigma_plus + sigma_neg + l*(tf.maximum(0.0 , mu_plus - mu_neg + alpha))
-    return loss 
+    return loss
 
 def new_new_loss(anchor, positive, negative, inter_class=-10, intra_class=.01):
     with tf.variable_scope('triplet_loss'):
-        
+
         pos_dist = tf.reduce_sum(tf.square(tf.subtract(anchor, positive)), 1)
         neg_dist = tf.reduce_sum(tf.square(tf.subtract(anchor, negative)), 1)
 
@@ -121,7 +121,7 @@ def new_new_loss(anchor, positive, negative, inter_class=-10, intra_class=.01):
 
         loss = pos_loss + neg_loss
         #loss = -tf.reduce_mean(neg_dist)
-    return loss 
+    return loss
 
 
 def compute_accuracy(triplets):
@@ -169,7 +169,7 @@ def test_model(pool_pctg, layer_size_1, layer_size_2):
     labels = tf.placeholder(tf.float32,shape=([None]),name='gt')
 
     dropout_f = tf.placeholder("float")
-    bn_train = tf.placeholder(tf.bool) 
+    bn_train = tf.placeholder(tf.bool)
 
     with tf.variable_scope("siamese") as scope:
         model1, filters= build_conv_net(anchor,bn_train,dropout_f, ts_length, embedding_size, pool_width, layer_size_1, layer_size_2)
@@ -185,7 +185,7 @@ def test_model(pool_pctg, layer_size_1, layer_size_2):
 
     debug_val = debug_loss(model1, model2, model3)
     regularization = regularizer(model1, model2, model3)
-    tr_loss = triplet_loss(model1, model2, model3) 
+    tr_loss = triplet_loss(model1, model2, model3)
 
 
     t_vars = tf.trainable_variables()
@@ -234,7 +234,7 @@ def test_model(pool_pctg, layer_size_1, layer_size_2):
                         #val_embedding = model1.eval(feed_dict={anchor:X_val,dropout_f:1.0})
                         accuracy = evaluate_test_embedding(train_embedding, y_train, test_embedding, y_test)
                         print 'ACCURACY: ', accuracy, ' EPOCH: ', epoch
-        
+
                 #pdb.set_trace()
                 if math.isnan(loss_value):
                     pdb.set_trace()
@@ -250,7 +250,7 @@ def test_model(pool_pctg, layer_size_1, layer_size_2):
             if epoch % 10  == 0:
                 tr_acc = compute_accuracy(tr_trip_idxs)
                 print "Training accuracy: ", tr_acc
-                
+
                 print('epoch %d  time: %f loss %0.5f r_loss %0.5f tr_loss %0.5f' %(epoch,duration,avg_loss/(total_batch), avg_r/total_batch, tr_val))
                 train_embedding=model1.eval(feed_dict={anchor:X_train,dropout_f:1.0})
                 test_embedding = model1.eval(feed_dict={anchor:X_test,dropout_f:1.0})
@@ -271,7 +271,7 @@ def test_model(pool_pctg, layer_size_1, layer_size_2):
                 break
             """
 
-        
+
 
         train_embedding=model1.eval(feed_dict={anchor:X_train,dropout_f:1.0})
         test_embedding = model1.eval(feed_dict={anchor:X_test,dropout_f:1.0})
