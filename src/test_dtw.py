@@ -31,9 +31,9 @@ class TestDTW(unittest.TestCase):
         assert _allclose(4, dtw.dtw(a, b, r=2))
 
     def test_dist_to_same_vect_is_zero(self):
-        for i in range(100):
+        X = np.random.randn(100, 40)
+        for x in X:
             for r in [0, 1, 5, 20]:
-                x = np.random.randn(50)
                 assert dtw.dtw(x, x, r) == 0
 
     def test_dtw_d(self):

@@ -8,9 +8,9 @@ import sys
 
 sys.path.insert(0, '../../')
 
-from time_series.tsne_python import tsne
+# from time_series.tsne_python import tsne
 from time_series.parse_dataset.readUcr import UCRDataset
-from time_series.models.utils import UCR_DATASETS, evaluate_train_embedding
+from time_series.models.utils import evaluate_train_embedding
 
 
 
@@ -65,10 +65,12 @@ def test_model(dataset, pool_pctg=.1, layer_size=40, stride_pct=-1):
   learning_rate = 2e-5
   input_norm = False   # Do you want z-score input normalization?
 
-  ucr_dataset = UCRDataset("../ucr_data/" + dataset) 
+  # ucr_dataset = UCRDataset("../ucr_data/" + dataset)
+  UCR_DATA_DIR = os.path.expanduser('~/Desktop/datasets/UCR_TS_Archive_2015/')
+  ucr_dataset = UCRDataset(UCR_DATA_DIR + dataset)
 
   X_train = ucr_dataset.Xtrain
-  y_train = ucr_dataset.Ytrain 
+  y_train = ucr_dataset.Ytrain
   X_val = ucr_dataset.Xtest[:2]
   y_val = ucr_dataset.Ytest[:2]
   X_test = ucr_dataset.Xtest
@@ -239,7 +241,7 @@ def test_model(dataset, pool_pctg=.1, layer_size=40, stride_pct=-1):
           """
       if i%400 == 0:
         #Check training performance
-        
+
         result = sess.run([cost,accuracy],feed_dict = { x: X_train, y_: y_train, keep_prob: 1.0, bn_train : False})
         perf_collect[1,step] = acc_train = result[1]
         cost_train = result[0]
@@ -282,7 +284,7 @@ def test_model(dataset, pool_pctg=.1, layer_size=40, stride_pct=-1):
     print('Accuracy given NN approach %0.2f' %(100*gg))
 
   """Additional plots"""
-  return gg 
+  return gg
   #plt.show()
   # We can now open TensorBoard. Run the following line from your terminal
   # tensorboard --logdir=./log_tb
