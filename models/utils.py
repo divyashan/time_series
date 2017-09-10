@@ -1,9 +1,22 @@
 import numpy as np
 import tensorflow as tf
 from itertools import product
+import scipy
 
 NUM_DIFF=30
-
+UCR_DATASETS = ['50Words', 'Adiac', 'ArrowHead', 'Beef', 'BeetleFly', 'BirdChicken', 'CBF', 'Car', 'ChlorineConcentration', 
+                          'CinC_ECG_torso', 'Coffee', 'Computers', 'Cricket_X', 'Cricket_Y', 'Cricket_Z', 'DiatomSizeReduction', 
+                          'DistalPhalanxOutlineAgeGroup', 'DistalPhalanxOutlineCorrect', 'DistalPhalanxTW', 'ECG200', 'ECG5000', 'ECGFiveDays', 
+                          'Earthquakes', 'ElectricDevices', 'FaceAll', 'FaceFour', 'FacesUCR', 'Fish', 'FordA', 'FordB', 'Gun_Point', 'Ham', 
+                          'HandOutlines', 'Haptics', 'Herring', 'InlineSkate', 'InsectWingbeatSound', 'ItalyPowerDemand', 'LargeKitchenAppliances', 
+                          'Lighting2', 'Lighting7', 'MALLAT', 'Meat', 'MedicalImages', 'MiddlePhalanxOutlineAgeGroup', 'MiddlePhalanxOutlineCorrect', 
+                          'MiddlePhalanxTW', 'MoteStrain', 'Non-Invasive Fetal ECG Thorax1', 'Non-Invasive Fetal ECG Thorax2', 'OSU Leaf', 
+                          'OliveOil Tony Bagnall', 'PhalangesOutlinesCorrect', 'Phoneme', 'Plane', 'ProximalPhalanxOutlineAgeGroup', 
+                          'ProximalPhalanxOutlineCorrect', 'ProximalPhalanxTW', 'RefrigerationDevices', 'ScreenType', 'ShapeletSim', 'ShapesAll', 
+                          'SmallKitchenAppliances', 'SonyAIBORobot Surface', 'SonyAIBORobot SurfaceII', 'StarLightCurves', 'Strawberry', 
+                          'Swedish Leaf', 'Symbols', 'Synthetic Control', 'ToeSegmentation1', 'ToeSegmentation2', 'Trace', 'Two Patterns', 
+                          'TwoLeadECG', 'UWaveGestureLibraryAll', 'Wafer', 'Wine', 'WordSynonyms', 'Worms', 'WormsTwoClass', 'Yoga', 
+                          'uWaveGestureLibrary_X', 'uWaveGestureLibrary_Y', 'uWaveGestureLibrary_Z']
 def create_triplets(x, digit_indices, labels):
     '''Positive and negative pair creation.
     Alternates between positive and negative pairs.
@@ -99,7 +112,14 @@ def evaluate_test_embedding(train_embedding, tr_y, test_embedding, test_y):
             n_correct += 1.0
     return n_correct/len(test_y)
 
-
+def evaluate_train_embedding(train_embedding, tr_y):
+    n_correct = 0.0
+    D = scipy.spatial.distance.squareform(scipy.spatial.distance.pdist(train_embedding))
+    for i in range(D.shape[0]):
+        row = D[i]
+        if tr_y[i] == tr_y[np.argsort(row)[1]]:
+            n_correct += 1
+    return n_correct/len(tr_y)
 
 def classify_sample(output, train_embedding, tr_y):
     dists = [np.linalg.norm(output-row) for row in train_embedding]
