@@ -94,9 +94,9 @@ def nameFromDir(datasetDir):
 def readUCRDataInDir(datasetDir, train):
     datasetName = nameFromDir(datasetDir)
     if train:
-        fileName = datasetName + "_TRAIN.txt"
+        fileName = datasetName + "_TRAIN"
     else:
-        fileName = datasetName + "_TEST.txt"
+        fileName = datasetName + "_TEST"
     filePath = os.path.join(datasetDir,fileName)
     return readDataFile(filePath)
 
