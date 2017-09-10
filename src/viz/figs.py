@@ -2,6 +2,7 @@
 
 import os
 import matplotlib.pyplot as plt
+# import titlecase
 import numpy as np
 import pandas as pd
 import seaborn as sb
@@ -24,7 +25,6 @@ from files import ensure_dir_exists
     // ^ actually, accuracy results should probably just be a table
     //      -and so should conv vs siamese vs triplet, probably
 """
-
 
 CAMERA_READY_FONT = 'DejaVu Sans'
 
@@ -61,7 +61,7 @@ def set_palette(ncolors=8):  # use this to change color palette in all plots
     return pal
 
 
-def _param_effect_fig(data_path, ycol, title, xlabel, ylabel,
+def _param_effect_fig(data_path, xcol, title, xlabel, ylabel,
                       placeholder=True, ax=None, kind='tsplot'):
     if ax is None:
         sb.set_context('talk', rc={"figure.figsize": (7, 4)})
@@ -70,7 +70,8 @@ def _param_effect_fig(data_path, ycol, title, xlabel, ylabel,
     df = pd.read_csv(data_path)
 
     if kind == 'tsplot':  # distro of accuracies for each size across dsets
-        sb.tsplot(df, ax=ax, time=ycol, unit=DATASET_COL, value=ACC_COL)
+        sb.tsplot(df, ax=ax, time=xcol, unit=DATASET_COL, value=ACC_COL)
+        plt.tight_layout()
 
     elif kind == 'hist':  # times each size is the best
         best_sizes = []
@@ -79,7 +80,7 @@ def _param_effect_fig(data_path, ycol, title, xlabel, ylabel,
             # print "dset: ", dset
             sub_df = df[df[DATASET_COL] == dset]
             idx = sub_df[ACC_COL].idxmax()
-            best_sz = sub_df[ycol][idx]
+            best_sz = sub_df[xcol][idx]
             # best_counts[best_sz] = best_counts.get(best_sz, 0) + 1
             best_sizes.append(best_sz)
 
@@ -96,6 +97,25 @@ def _param_effect_fig(data_path, ycol, title, xlabel, ylabel,
         # ax.set_xlabel('Log2(Neurons in each fully connected layer)', fontsize=16)
         # ax.set_ylabel('Probability of yielding highest accuracy', fontsize=16)
         # ax.set_xscale('log')
+        plt.tight_layout()
+
+    elif kind == 'line':
+        dsets = df[DATASET_COL].unique()
+        # dset_names = [name.capitalize() for name in dsets]
+        for dset in dsets:
+            sub_df = df[df[DATASET_COL] == dset]
+            xvals = sub_df[xcol]
+            yvals = sub_df[ACC_COL]
+            name = dset.replace('_', ' ').replace('-', ' ').capitalize()
+            ax.plot(xvals, yvals, label=name)
+
+        leg_lines, leg_labels = ax.get_legend_handles_labels()
+        plt.figlegend(leg_lines, leg_labels, loc='lower center',
+                      ncol=4, labelspacing=0)
+
+        # plt.tight_layout(w_pad=.02)
+        plt.tight_layout()
+        plt.subplots_adjust(bottom=.25)
     else:
         raise ValueError("Unrecognized figure kind '{}'".format(kind))
 
@@ -104,7 +124,53 @@ def _param_effect_fig(data_path, ycol, title, xlabel, ylabel,
     ax.set_ylabel(ylabel, fontsize=16)
     # ax.set_xscale('log')
 
-    plt.tight_layout()
+    plt.show()
+
+
+def param_effects_fig(placeholder=True):
+    sb.set_context('talk', rc={"figure.figsize": (5, 6)})
+    fig, axes = plt.subplots(2)
+
+    df_fc = pd.read_csv(NET_SIZE_PATH)
+    df_pool = pd.read_csv(POOL_SIZE_PATH)
+
+    # make sure both use the same datasets, because otherwise the
+    # legend will break / be wrong
+    dsets_fc = sorted(df_fc[DATASET_COL].unique())
+    dsets_pool = sorted(df_pool[DATASET_COL].unique())
+    assert np.array_equal(dsets_fc, dsets_pool)
+    dsets = dsets_fc
+
+    # print "param_effects_fig: using datasets: ", dsets
+
+    # ------------------------ top plot: fc layer size
+
+    fc_params = (df_fc, NET_SIZE_COL, axes[0])
+    pool_params = (df_pool, POOL_SIZE_COL, axes[1])
+    for (df, xcol, ax) in (fc_params, pool_params):
+        for dset in dsets:
+            sub_df = df[df[DATASET_COL] == dset]
+            xvals, yvals = sub_df[xcol], sub_df[ACC_COL]
+            name = dset.replace('_', ' ').replace('-', ' ').capitalize()
+            ax.plot(xvals, yvals, label=name)
+
+    leg_lines, leg_labels = ax.get_legend_handles_labels()
+    plt.figlegend(leg_lines, leg_labels, loc='lower center',
+                  ncol=4, labelspacing=0)
+
+    ax = axes[0]
+    ax.set_title("Fully Connected Layer Sizes vs Accuracy", fontweight='bold', y=1.03)
+    ax.set_xlabel("Neurons in Each Fully Connected Layer")
+    ax.set_ylabel("Accuracy")
+    ax = axes[1]
+    ax.set_title("Max Pooling Amount vs Accuracy", fontweight='bold', y=1.03)
+    ax.set_xlabel("Fraction of Mean Time Series Length")
+    ax.set_ylabel("Accuracy")
+
+    # plt.tight_layout(w_pad=.02)
+    plt.tight_layout(h_pad=2.0)
+    plt.subplots_adjust(bottom=.25)
+
     plt.show()
 
 
@@ -113,51 +179,69 @@ def net_size_fig(kind='tsplot', **kwargs):
     if kind == 'tsplot':
         _param_effect_fig(
             data_path=NET_SIZE_PATH,
-            ycol=NET_SIZE_COL,
+            xcol=NET_SIZE_COL,
             title='Fully Connected Layer size vs Accuracy',
             xlabel='Neurons in each fully connected layer',
             ylabel='Accuracy across all UCR datasets',
-            kind=kind,
-            **kwargs)
+            kind=kind, **kwargs)
     elif kind == 'hist':
         _param_effect_fig(
             data_path=NET_SIZE_PATH,
-            ycol=NET_SIZE_COL,
+            xcol=NET_SIZE_COL,
             title='Distribution of Best FC Layer Sizes',
             xlabel='Log2(Neurons in each fully connected layer)',
             ylabel='Probability of yielding highest accuracy',
-            kind=kind,
-            **kwargs)
+            kind=kind, **kwargs)
+    elif kind == 'line':
+        _param_effect_fig(
+            data_path=NET_SIZE_PATH,
+            xcol=NET_SIZE_COL,
+            title='Fully Connected Layer Size vs Accuracy',
+            xlabel='Neurons in each fully connected layer',
+            ylabel='Accuracy',
+            kind=kind, **kwargs)
 
 
 def pool_size_fig(kind='tsplot', **kwargs):
     if kind == 'tsplot':
         _param_effect_fig(
             data_path=POOL_SIZE_PATH,
-            ycol=POOL_SIZE_COL,
+            xcol=POOL_SIZE_COL,
             title='Max Pool Size vs Accuracy',
             xlabel='Max pool size (fraction of mean time series length)',
             ylabel='Accuracy across all UCR datasets',
-            kind=kind,
-            **kwargs)
+            kind=kind, **kwargs)
     elif kind == 'hist':
         _param_effect_fig(
             data_path=POOL_SIZE_PATH,
-            ycol=POOL_SIZE_COL,
+            xcol=POOL_SIZE_COL,
             title='Distribution of Best Max Pool Sizes',
             xlabel='Max pool size (fraction of mean time series length)',
             ylabel='Probability of yielding highest accuracy',
-            kind=kind,
-            **kwargs)
+            kind=kind, **kwargs)
+    elif kind == 'line':
+        _param_effect_fig(
+            data_path=POOL_SIZE_PATH,
+            xcol=POOL_SIZE_COL,
+            title='Max Pooling Size vs Accuracy',
+            xlabel='Max pool size (fraction of mean time series length)',
+            ylabel='Accuracy',
+            kind=kind, **kwargs)
 
 
 # ================================================================ main
 
 def main():
-    net_size_fig(kind='tsplot')
-    pool_size_fig(kind='tsplot')
-    net_size_fig(kind='hist')
-    pool_size_fig(kind='hist')
+    # unused
+    # net_size_fig(kind='line')
+    # pool_size_fig(kind='line')
+    # pool_size_fig(kind='tsplot')
+    # net_size_fig(kind='tsplot')
+    # pool_size_fig(kind='tsplot')
+    # net_size_fig(kind='hist')
+    # pool_size_fig(kind='hist')
+
+    param_effects_fig()
 
 
 if __name__ == '__main__':
