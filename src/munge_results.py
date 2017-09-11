@@ -16,7 +16,8 @@ DECADE_PATH = os.path.join(PLACEHOLDER_RESULTS_DIR, 'decade-accuracies.csv')
 
 RESULTS_DIR = 'src/final-results'
 UCR_PATH = os.path.join(RESULTS_DIR, 'ucr-accuracies.csv')
-UCI_PATH = os.path.join(RESULTS_DIR, 'uci-err-rates.csv')
+# UCI_PATH = os.path.join(RESULTS_DIR, 'uci-err-rates.csv')
+UCI_PATH = os.path.join(RESULTS_DIR, 'uci-accuracies.csv')
 
 
 def _compute_ranks(df, lower_better=True):
@@ -49,8 +50,9 @@ def main():
     # cd_diagram(pd.read_csv(ERR_RATES_PATH), lower_better=True)
     # cd_diagram(pd.read_csv(WEASEL_PATH), lower_better=False)
     # cd_diagram(pd.read_csv(DECADE_PATH), lower_better=False)
-    cd_diagram(pd.read_csv(UCR_PATH), lower_better=False)
-    cd_diagram(pd.read_csv(UCI_PATH), lower_better=True)
+    # cd_diagram(pd.read_csv(UCR_PATH), lower_better=False)
+    cd_diagram(pd.read_csv(UCI_PATH), lower_better=False)
+    # cd_diagram(pd.read_csv(UCI_PATH), lower_better=True)
     plt.show()
 
     # df = pd.read_csv(ERR_RATES_PATH)
