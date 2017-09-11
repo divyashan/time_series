@@ -10,6 +10,8 @@ try:
 except ImportError:
     HAS_C_IMPL = False
 
+assert HAS_C_IMPL  # TODO rm
+
 
 def _distsq(x, y):
     diffs = x - y
@@ -194,12 +196,6 @@ def dtw_i(x, y, r, d_best=np.inf, **kwargs):
         if total >= d_best:  # try early abandoning
             return total
 
-    # # if HAS_C_IMPL:
-
-    #         # if
-    # else:
-    #     for d in range(x.shape[1]):
-    #         total += dtw(x[:, d], y[:, d], r, **kwargs)
     return total
 
 

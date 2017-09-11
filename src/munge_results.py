@@ -18,6 +18,7 @@ RESULTS_DIR = 'src/final-results'
 UCR_PATH = os.path.join(RESULTS_DIR, 'ucr-accuracies.csv')
 # UCI_PATH = os.path.join(RESULTS_DIR, 'uci-err-rates.csv')
 UCI_PATH = os.path.join(RESULTS_DIR, 'uci-accuracies.csv')
+# UCI_ALL_PATH = os.path.join(RESULTS_DIR, 'uci-accuracies-all.csv')
 
 
 def _compute_ranks(df, lower_better=True):
@@ -29,7 +30,7 @@ def cd_diagram(df, lower_better=True):
     import Orange as orn  # requires py3.4 or greater environment
 
     ranks = _compute_ranks(df, lower_better=lower_better)
-    names = [s.strip().capitalize() for s in ranks.columns]
+    names = [s.strip() for s in ranks.columns]
     mean_ranks = ranks.mean(axis=0)
     ndatasets = df.shape[0]
 
@@ -52,6 +53,7 @@ def main():
     # cd_diagram(pd.read_csv(DECADE_PATH), lower_better=False)
     # cd_diagram(pd.read_csv(UCR_PATH), lower_better=False)
     cd_diagram(pd.read_csv(UCI_PATH), lower_better=False)
+    # cd_diagram(pd.read_csv(UCI_ALL_PATH), lower_better=False)
     # cd_diagram(pd.read_csv(UCI_PATH), lower_better=True)
     plt.show()
 

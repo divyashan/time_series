@@ -41,7 +41,7 @@ def all_data():
     # print "labels.shape", labels.shape
     # print "initial labels: ", labels[0:1000:50]
 
-    ts_list = [data[0, i] for i in range(2858)]
+    ts_list = [np.ascontiguousarray(data[0, i].T) for i in range(2858)]
     # print "initial ts shapes: ", [ts.shape for ts in ts_list[:20]]
 
     return ts_list, labels

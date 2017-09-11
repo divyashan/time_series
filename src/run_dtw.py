@@ -76,6 +76,8 @@ def dtwi_1nn_accuracy(dset_name, splits):
     for i, split in enumerate(splits):
         t0 = time.clock()
         print "running split {}...".format(i)
+        print "X_train[0] shape", split.X_train[0].shape
+        print "X_test[0] shape", split.X_test[0].shape
         yhat = dtwi_1nn_classify(
             X_list=split.X_train, y_train=split.y_train, q_list=split.X_test)
         correct = yhat == split.y_test
@@ -99,9 +101,11 @@ def dtwi_run_one_experiment(dset):
 def dtwi_run_experiments():
     accuracies = []
 
-    # for dset in ds.NOT_TINY_DATASETS:
     # for dset in [ds.VOWELS, ds.AUSLAN]:
-    for dset in [ds.VOWELS, ds.LIBRAS, ds.ECG]:
+    # for dset in [ds.VOWELS, ds.LIBRAS, ds.ECG]:
+    # for dset in [ds.TRAJECTORIES]:
+    # for dset in ds.NOT_TINY_DATASETS:
+    for dset in ds.TINY_DATASETS:
         accuracies.append(dtwi_run_one_experiment(dset))
 
     df = pd.DataFrame.from_records(accuracies, columns=[
@@ -113,8 +117,6 @@ def dtwi_run_experiments():
 # ================================================================ main
 
 def sanity_check_dsets():
-    # for dset in [ds.ARABIC_DIGITS]:
-    # for dset in [ds.VOWELS]:
     for dset in ds.ALL_DATASETS:
         splits = ds.cv_splits_for_dataset(dset)
         print("{}: {} splits".format(dset, len(splits)))
@@ -141,7 +143,6 @@ def sanity_check_dsets():
 def main():
     # sanity_check_dsets()
     # return
-
     dtwi_run_experiments()
 
 

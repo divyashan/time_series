@@ -1,0 +1,7 @@
+,dataset,DTW-I
+0,ecg,0.81
+1,libras,0.861111111111
+2,auslan,1.0
+3,wafer,0.979061976549
+4,trajectories,0.97410776767
+5,arabic_digits,0.972272727273
