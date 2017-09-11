@@ -14,8 +14,8 @@ def _allclose(x, y):
 class TestDTW(unittest.TestCase):
 
     def test_1d(self):
-        a = [5, 2, 2, 3, 5.1]
-        b = [5, 2, 3, 3, 4]
+        a = np.array([5, 2, 2, 3, 5.1])
+        b = np.array([5, 2, 3, 3, 4.])
 
         d = dtw.dtw(a, b, r=0)
         assert _allclose(d, 1 + (1.1 * 1.1))
@@ -24,17 +24,19 @@ class TestDTW(unittest.TestCase):
         assert _allclose(d, 1.1 * 1.1)
         # assert np.allclose(d, 1.1 * 1.1, atol=1e-3)
 
-        a = [0, 0, 1, 1, 2, 4, 2, 1, 2, 0]
-        b = [1, 1, 1, 2, 2, 2, 2, 3, 2, 0]
+        a = np.array([0, 0, 1, 1, 2, 4, 2, 1, 2, 0])
+        b = np.array([1, 1, 1, 2, 2, 2, 2, 3, 2, 0])
         assert _allclose(11, dtw.dtw(a, b, r=0))
         assert _allclose(8, dtw.dtw(a, b, r=1))
         assert _allclose(4, dtw.dtw(a, b, r=2))
 
     def test_dist_to_same_vect_is_zero(self):
-        X = np.random.randn(100, 40)
-        for x in X:
-            for r in [0, 1, 5, 20]:
-                assert dtw.dtw(x, x, r) == 0
+        X = np.random.randn(1000, 40)
+        for r in [0, 1, 5, 20]:
+            for x in X:
+                assert dtw.dtw(x, x, r, use_c_impl=True) == 0
+            for x in X[:50]:
+                assert dtw.dtw(x, x, r, use_c_impl=False) == 0
 
     def test_dtw_d(self):
         a = np.array([5, 2, 2, 3, 5.1])
