@@ -32,8 +32,10 @@ SAVE_DIR = os.path.expanduser('figs/')
 ensure_dir_exists(SAVE_DIR)
 
 ACC_PATH = 'placeholder-data/placeholder-acc-results.csv'
-NET_SIZE_PATH = 'placeholder-data/placeholder-netsize-results.csv'
-POOL_SIZE_PATH = 'placeholder-data/placeholder-poolsize-results.csv'
+# NET_SIZE_PATH = 'placeholder-data/placeholder-netsize-results.csv'
+# POOL_SIZE_PATH = 'placeholder-data/placeholder-poolsize-results.csv'
+NET_SIZE_PATH = 'src/viz/results/netsize.csv'
+POOL_SIZE_PATH = 'src/viz/results/poolsize.csv'
 
 DATASET_COL = 'dataset'
 ALGOROTHM_COL = 'algorithm'
@@ -41,9 +43,9 @@ ACC_COL = 'accuracy'
 NET_SIZE_COL = 'size'
 POOL_SIZE_COL = 'size_pct'
 
-ACC_COLS = [DATASET_COL, ALGOROTHM_COL, ACC_COL]
-NET_SIZE_COLS = [DATASET_COL, NET_SIZE_COL, ACC_COL]
-POOL_SIZE_COLS = [DATASET_COL, POOL_SIZE_COL, ACC_COL]
+# ACC_COLS = [DATASET_COL, ALGOROTHM_COL, ACC_COL]
+# NET_SIZE_COLS = [DATASET_COL, NET_SIZE_COL, ACC_COL]
+# POOL_SIZE_COLS = [DATASET_COL, POOL_SIZE_COL, ACC_COL]
 
 
 def save_fig(name):
@@ -111,7 +113,7 @@ def _param_effect_fig(data_path, xcol, title, xlabel, ylabel,
 
         leg_lines, leg_labels = ax.get_legend_handles_labels()
         plt.figlegend(leg_lines, leg_labels, loc='lower center',
-                      ncol=4, labelspacing=0)
+                      ncol=2, labelspacing=0)
 
         # plt.tight_layout(w_pad=.02)
         plt.tight_layout()
@@ -128,8 +130,12 @@ def _param_effect_fig(data_path, xcol, title, xlabel, ylabel,
 
 
 def param_effects_fig(placeholder=True):
-    sb.set_context('talk', rc={"figure.figsize": (5, 6)})
-    fig, axes = plt.subplots(2)
+    sb.set_context('talk')
+    # sb.set_context('poster')
+    # sb.set_context('notebook')
+    fig, axes = plt.subplots(2, figsize=(6, 8))
+
+    KEEP_HOW_MANY = 10  # plotting too many makes fig hideous
 
     df_fc = pd.read_csv(NET_SIZE_PATH)
     df_pool = pd.read_csv(POOL_SIZE_PATH)
@@ -141,6 +147,10 @@ def param_effects_fig(placeholder=True):
     assert np.array_equal(dsets_fc, dsets_pool)
     dsets = dsets_fc
 
+    dset_names_lens = np.array([len(name) for name in dsets])
+    sort_idxs = np.argsort(dset_names_lens)
+    dsets = [dsets[i] for i in sort_idxs[:KEEP_HOW_MANY]]
+
     # print "param_effects_fig: using datasets: ", dsets
 
     # ------------------------ top plot: fc layer size
@@ -151,27 +161,32 @@ def param_effects_fig(placeholder=True):
         for dset in dsets:
             sub_df = df[df[DATASET_COL] == dset]
             xvals, yvals = sub_df[xcol], sub_df[ACC_COL]
-            name = dset.replace('_', ' ').replace('-', ' ').capitalize()
+            # name = dset.replace('_', ' ').replace('-', ' ').capitalize()
+            name = dset.replace('_', ' ').replace('-', ' ')
             ax.plot(xvals, yvals, label=name)
 
     leg_lines, leg_labels = ax.get_legend_handles_labels()
     plt.figlegend(leg_lines, leg_labels, loc='lower center',
-                  ncol=4, labelspacing=0)
+                  ncol=2, labelspacing=0)
 
     ax = axes[0]
-    ax.set_title("Fully Connected Layer Sizes vs Accuracy", fontweight='bold', y=1.03)
+    ax.set_title("Effect of Fully Connected Layer Size", y=1.03)
     ax.set_xlabel("Neurons in Each Fully Connected Layer")
     ax.set_ylabel("Accuracy")
     ax = axes[1]
-    ax.set_title("Max Pooling Amount vs Accuracy", fontweight='bold', y=1.03)
+    ax.set_title("Effect of Max Pooling Amount", y=1.03)
     ax.set_xlabel("Fraction of Mean Time Series Length")
     ax.set_ylabel("Accuracy")
 
     # plt.tight_layout(w_pad=.02)
-    plt.tight_layout(h_pad=2.0)
-    plt.subplots_adjust(bottom=.25)
+    # plt.tight_layout(h_pad=2.0)
+    plt.tight_layout(h_pad=1.8)
+    # plt.tight_layout()
+    # plt.subplots_adjust(bottom=.28)
+    plt.subplots_adjust(bottom=.23)
 
-    plt.show()
+    # plt.show()
+    save_fig_png('param_effects')
 
 
 # def net_size_fig(placeholder=True, ax=None, kind='hist'):
