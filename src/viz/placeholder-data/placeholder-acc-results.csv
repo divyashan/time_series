@@ -1,7 +1,13 @@
-dataset,algorithm,accuracy
-UCR,Proposed,.99
-UCR,decade,.76
-UCR,DTW,.74
-EEG,Proposed,.89
-EEG,decade,.66
-EEG,DTW,.64
+dataset,accuracy,algorithm
+libras,0.28,siamese_CNN
+ecg,0.7561,siamese_CNN
+trajectories,0.9328,siamese_CNN
+auslan,1.0,siamese_CNN
+wafer,.9683,siamese_CNN
+arabic_digits, ,siamese_CNN
+auslan,1.0,siamese_RNN
+ecg,0.658536,siamese_RNN
+wafer,0.9541677,siamese_RNN
+trajectories,0.8163,siamese_RNN
+libras,0.32,siamese_RNN
+arabic_digits,.3754,siamese_RNN
