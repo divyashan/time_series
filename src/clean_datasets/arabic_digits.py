@@ -21,6 +21,8 @@ def _create_labels(instances_per_cls):
         end_idx = start_idx + instances_per_cls
         y[start_idx:end_idx] = i
 
+    return y
+
 
 def train_labels():
     return _create_labels(660)

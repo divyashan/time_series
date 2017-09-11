@@ -4,6 +4,12 @@ import numpy as np
 
 import numba
 
+try:
+    import dig  # for dtw; github.com/dblalock/dig
+    HAS_C_IMPL = True
+except ImportError:
+    HAS_C_IMPL = False
+
 
 def _distsq(x, y):
     diffs = x - y
@@ -72,9 +78,9 @@ def _dtw_jit(x, y, r, thresh, costs, costs_prev):
     return costs_prev[r]
 
 
-def dtw(x, y, r, dist_func=None, thresh=None, jit=False):
-    assert len(x) == len(y)
-    x, y = np.asarray(x), np.asarray(y)
+def dtw(x, y, r, dist_func=None, thresh=None, jit=False, use_c_impl=False):
+    # x, y = np.asarray(x), np.asarray(y)
+    assert x.shape == y.shape
     # x = np.ascontiguousarray(x, dtype=np.float32)
     # y = np.ascontiguousarray(y, dtype=np.float32)
     m = len(x)
@@ -89,14 +95,32 @@ def dtw(x, y, r, dist_func=None, thresh=None, jit=False):
     if r == 0:
         return dist_func(x, y)
 
+    # hmm...can't get JIT func to actually be faster
+    # if jit and dist_func == _distsq:
+    #     costs = np.zeros(2*r + 1, dtype=x.dtype)
+    #     costs_prev = np.zeros(2*r + 1, dtype=x.dtype)
+    #     if thresh is None or thresh <= 0:
+    #         thresh = 1e9
+    #     return _dtw_jit(x, y, r, thresh, costs, costs_prev)
+
+    if use_c_impl:
+        return dig.dist_dtw(x, y, r)
+
+    # use_c_impl = (len(x.shape) == 1) and dist_func == _distsq
+    # use_c_impl = use_c_impl and (x.dtype == y.dtype)
+    # use_c_impl = use_c_impl and (x.dtype == np.float64)  # only does dbls...
+    # if use_c_impl:
+    #     # print "x shape, y shape", x.shape, y.shape
+    #     try:
+    #         # assert x.dtype == np.float64  # only implemented for dbls...
+    #         # assert y.dtype == np.float64  # only implemented for dbls...
+    #         return dist_dtw(x, y, r)
+    #     except ImportError:
+    #         pass
+
     # allocate tmp storage
     costs = np.zeros(2*r + 1, dtype=x.dtype)
     costs_prev = np.zeros(2*r + 1, dtype=x.dtype)
-
-    if jit and dist_func == _distsq:
-        if thresh is None or thresh <= 0:
-            thresh = 1e9
-        return _dtw_jit(x, y, r, thresh, costs, costs_prev)
 
     final_idx = m - 1
     k = r  # first entry in costs array initially at index r
@@ -156,13 +180,26 @@ def dtw_d(x, y, r, **kwargs):
     return dtw(x, y, r, **kwargs)
 
 
-def dtw_i(x, y, r, **kwargs):
-    x, y = np.asarray(x), np.asarray(y)
+def dtw_i(x, y, r, d_best=np.inf, **kwargs):
+    if HAS_C_IMPL:
+        x, y = np.asarray(x, dtype=np.float64), np.asarray(y, dtype=np.float64)
+    else:
+        x, y = np.asarray(x), np.asarray(y)
     if len(x.shape) == 1:
         return dtw(x, y, r, **kwargs)
-    total = 0
+
+    total = 0.
     for d in range(x.shape[1]):
-        total += dtw(x[:, d], y[:, d], r, **kwargs)
+        total += dtw(x[:, d], y[:, d], r, use_c_impl=HAS_C_IMPL, **kwargs)
+        if total >= d_best:  # try early abandoning
+            return total
+
+    # # if HAS_C_IMPL:
+
+    #         # if
+    # else:
+    #     for d in range(x.shape[1]):
+    #         total += dtw(x[:, d], y[:, d], r, **kwargs)
     return total
 
 
