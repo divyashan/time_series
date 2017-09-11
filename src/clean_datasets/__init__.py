@@ -46,6 +46,7 @@ _DSET_TO_MODULE = {
     }
 
 ALL_DATASETS = sorted(_DSET_TO_MODULE.keys())
+NOT_TINY_DATASETS = [ARABIC_DIGITS, AUSLAN, TRAJECTORIES, LIBRAS, ECG, WAFER]
 
 _SEED = 123  # random seed for cross validation
 

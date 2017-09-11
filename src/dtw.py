@@ -5,7 +5,7 @@ import numpy as np
 import numba
 
 try:
-    import dig  # for dtw
+    import dig  # for dtw; github.com/dblalock/dig
     HAS_C_IMPL = True
 except ImportError:
     HAS_C_IMPL = False
@@ -180,21 +180,26 @@ def dtw_d(x, y, r, **kwargs):
     return dtw(x, y, r, **kwargs)
 
 
-def dtw_i(x, y, r, **kwargs):
+def dtw_i(x, y, r, d_best=np.inf, **kwargs):
     if HAS_C_IMPL:
         x, y = np.asarray(x, dtype=np.float64), np.asarray(y, dtype=np.float64)
     else:
         x, y = np.asarray(x), np.asarray(y)
     if len(x.shape) == 1:
         return dtw(x, y, r, **kwargs)
-    total = 0
 
-    if HAS_C_IMPL:
-        for d in range(x.shape[1]):
-            total += dtw(x[:, d], y[:, d], r, use_c_impl=True, **kwargs)
-    else:
-        for d in range(x.shape[1]):
-            total += dtw(x[:, d], y[:, d], r, **kwargs)
+    total = 0.
+    for d in range(x.shape[1]):
+        total += dtw(x[:, d], y[:, d], r, use_c_impl=HAS_C_IMPL, **kwargs)
+        if total >= d_best:  # try early abandoning
+            return total
+
+    # # if HAS_C_IMPL:
+
+    #         # if
+    # else:
+    #     for d in range(x.shape[1]):
+    #         total += dtw(x[:, d], y[:, d], r, **kwargs)
     return total
 
 

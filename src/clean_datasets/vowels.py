@@ -16,8 +16,9 @@ TEST_FILE = os.path.join(paths.VOWELS, 'ae.test.txt')
 
 def train_labels():
     instances_per_cls = 30
-    y = np.zeros(instances_per_cls * 10, dtype=np.int32)
-    for i in range(1, 10):
+    nclasses = 9
+    y = np.zeros(instances_per_cls * nclasses, dtype=np.int32)
+    for i in range(1, nclasses):
         start_idx = instances_per_cls * i
         end_idx = start_idx + instances_per_cls
         y[start_idx:end_idx] = i
@@ -81,6 +82,9 @@ def main():
 
     print "inital train labels: ", train_labels()[0:200:20]
     print "inital test labels: ", test_labels()[0:200:20]
+
+    y = test_labels()
+    print "X_test len, y_test shape", len(X), y.shape
 
 
 if __name__ == '__main__':
