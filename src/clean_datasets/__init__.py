@@ -82,8 +82,33 @@ def _check_dset_valid(dset_name):
         raise ValueError("Invalid dataset name '{}'; valid names"
                          " include:\n{}".format(ALL_DATASETS))
 
+def _pad_to_same_length(ts_list):
+    max_len = np.max([len(ts) for ts in ts_list])
+    ret = []
+    for ts in ts_list:
+        length = len(ts)
+        pad_length = max_len - length
+        if pad_length <= 0:
+            new_ts = ts
+        else:
+            new_ts = np.zeros((max_len, ts.shape[1]))
+            new_ts[:len(ts), :] = ts
 
-def cv_splits_for_dataset(dset_name, n_folds=5):
+        ret.append(new_ts)
+    return ret
+
+
+def _resample_to_same_length(ts_list):
+    max_len = int(np.max([len(ts) for ts in ts_list]))
+    idxs = np.arange(max_len)
+    ret = []
+    for ts in ts_list:
+        take_idxs = (idxs * float(len(ts)) / max_len).astype(np.int32)
+        ret.append(ts[take_idxs])
+    return ret
+
+
+def cv_splits_for_dataset(dset_name, n_folds=5, length_adjust=None):
     _check_dset_valid(dset_name)
 
     mod = _DSET_TO_MODULE[dset_name]
@@ -91,10 +116,25 @@ def cv_splits_for_dataset(dset_name, n_folds=5):
     try:
         X_train, y_train = mod.train_data()
         X_test, y_test = mod.test_data()
+
+        if length_adjust == 'pad':
+            X_train = _pad_to_same_length(X_train)
+            X_test = _pad_to_same_length(X_test)
+        elif length_adjust == 'upsample':
+            X_train = _resample_to_same_length(X_train)
+            X_test = _resample_to_same_length(X_test)
+
         return [CVSplit(X_train=X_train, y_train=y_train,
                         X_test=X_test, y_test=y_test)]
+
     except AttributeError:
         X, y = mod.all_data()
+
+        if length_adjust == 'pad':
+            X = _pad_to_same_length(X)
+        elif length_adjust == 'upsample':
+            X = _resample_to_same_length(X)
+
         return cv_splits(X, y, n_folds=n_folds)
 
 

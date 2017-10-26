@@ -89,7 +89,7 @@ def main():
     # plt.show()
     # return
 
-    pairwise_significance(pd.read_csv(UCI_PATH), lower_better=False)
+    # pairwise_significance(pd.read_csv(UCI_PATH), lower_better=False)
 
     # df = pd.read_csv(ERR_RATES_PATH)
     # ranks = _compute_ranks(df)

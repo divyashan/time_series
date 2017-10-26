@@ -1,0 +1,10 @@
+\begin{tabular}{l|c|cc}
+Dataset                 &  Jiffy & LDPS   &  K-Shape \\
+\hline
+ArabicDigits            & 0.8494 & 0.8257 &  \b{0.9300} \\
+AUSLAN                  & 0.9896 & \b{0.9899} &   -     \\
+CharacterTrajectories   & \b{0.9653} & 0.9385 &  0.9615 \\
+ECG                     & 0.5861 & 0.5497 &  \b{0.6231} \\
+Libras                  & \b{0.8827} & 0.8693 &  0.4748 \\
+Wafer                   & \b{0.7460} & 0.5535 &  0.5455 \\
+\end{tabular}
