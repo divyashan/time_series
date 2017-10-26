@@ -77,10 +77,14 @@ def cv_splits(X, y, n_folds=5):
     return splits
 
 
-def cv_splits_for_dataset(dset_name, n_folds=5):
+def _check_dset_valid(dset_name):
     if dset_name not in ALL_DATASETS:
         raise ValueError("Invalid dataset name '{}'; valid names"
                          " include:\n{}".format(ALL_DATASETS))
+
+
+def cv_splits_for_dataset(dset_name, n_folds=5):
+    _check_dset_valid(dset_name)
 
     mod = _DSET_TO_MODULE[dset_name]
 
@@ -92,3 +96,54 @@ def cv_splits_for_dataset(dset_name, n_folds=5):
     except AttributeError:
         X, y = mod.all_data()
         return cv_splits(X, y, n_folds=n_folds)
+
+
+# zero-pads time series to be all be the length of the longest one in the
+# dataset, then flattens to 1D by concatenating data from each variable;
+# finally, prepends label to each 1D time series; end result is a dataset
+# that, when dumped to a csv file, is in the same format as the UCR archive
+# datasets
+#
+# Also note that we concatenate the training and test sets into one matrix,
+# because that's what we need right now (to assess clustering)
+def dset_to_ucr_mat(dset_name):
+    _check_dset_valid(dset_name)
+    mod = _DSET_TO_MODULE[dset_name]
+    try:
+        X_train, y_train = mod.train_data()
+        X_test, y_test = mod.test_data()
+
+        X = X_train + X_test
+        y = np.hstack((y_train, y_test))
+
+    except AttributeError:
+        X, y = mod.all_data()
+
+    max_len = np.max([len(ts) for ts in X])
+    X_new = []
+    for ts in X:
+        length = len(ts)
+        pad_length = max_len - length
+        if pad_length <= 0:
+            new_ts = ts
+        else:
+            new_ts = np.zeros((max_len, ts.shape[1]))
+            new_ts[:len(ts), :] = ts
+
+        flattened = np.asfortranarray(new_ts).T.ravel()
+        assert np.array_equal(flattened[:length], ts[:length, 0])
+
+        # print "ts old shape, intermediate shape, new shape: ", \
+        #     ts.shape, new_ts.shape, flattened.shape
+
+        X_new.append(flattened)
+
+    X = np.vstack(X_new)
+
+    shape = np.array(X.shape)
+    shape[1] += 1
+    out = np.empty(shape)
+    out[:, 0] = y
+    out[:, 1:] = X
+
+    return out
