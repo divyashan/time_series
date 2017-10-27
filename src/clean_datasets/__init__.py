@@ -138,6 +138,30 @@ def cv_splits_for_dataset(dset_name, n_folds=5, length_adjust=None):
         return cv_splits(X, y, n_folds=n_folds)
 
 
+def dset_as_mat(dset_name, length_adjust='upsample'):
+    _check_dset_valid(dset_name)
+    mod = _DSET_TO_MODULE[dset_name]
+
+    try:
+        X_train, y_train = mod.train_data()
+        X_test, y_test = mod.test_data()
+
+        X = X_train + X_test
+        y = np.hstack((y_train, y_test))
+
+    except AttributeError:
+        X, y = mod.all_data()
+
+    if length_adjust == 'pad':
+        X = _pad_to_same_length(X)
+    elif length_adjust == 'upsample':
+        X = _resample_to_same_length(X)
+
+    # print "ts lengths in X: ", [len(ts) for ts in X]
+    flat_X = [ts.ravel() for ts in X]
+    return np.vstack(flat_X), y
+
+
 # zero-pads time series to be all be the length of the longest one in the
 # dataset, then flattens to 1D by concatenating data from each variable;
 # finally, prepends label to each 1D time series; end result is a dataset

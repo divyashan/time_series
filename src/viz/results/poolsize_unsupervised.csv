@@ -1,4 +1,4 @@
-accuracy,dataset,network,size_pct
+accuracy,dataset,network,poolsize
 0.633393829401,Beef,ts_autoencoder,0.0
 0.500220811944,Yoga,ts_autoencoder,0.0
 0.524807826695,Coffee,ts_autoencoder,0.0

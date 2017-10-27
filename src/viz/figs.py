@@ -36,6 +36,8 @@ ACC_PATH = 'placeholder-data/placeholder-acc-results.csv'
 # POOL_SIZE_PATH_SUPERVISED = 'placeholder-data/placeholder-poolsize-results.csv'
 NET_SIZE_PATH_SUPERVISED = 'src/viz/results/netsize.csv'
 POOL_SIZE_PATH_SUPERVISED = 'src/viz/results/poolsize.csv'
+NET_SIZE_PATH_UNSUPERVISED = 'src/viz/results/netsize_unsupervised.csv'
+POOL_SIZE_PATH_UNSUPERVISED = 'src/viz/results/poolsize_unsupervised.csv'
 
 DATASET_COL = 'dataset'
 ALGOROTHM_COL = 'algorithm'
@@ -136,7 +138,10 @@ def param_effects_fig(placeholder=True, supervised=True):
     # sb.set_context('notebook')
     # fig, axes = plt.subplots(2, figsize=(6, 8))
     # fig, axes = plt.subplots(1, 2, figsize=(10, 6))
-    fig, axes = plt.subplots(1, 2, figsize=(10, 5.2))
+    if supervised:
+        fig, axes = plt.subplots(1, 2, figsize=(10, 5.2))
+    else:
+        fig, axes = plt.subplots(1, 2, figsize=(10, 5.72))  # 10% taller
 
     KEEP_HOW_MANY = 10  # plotting too many makes fig hideous
 
@@ -187,11 +192,16 @@ def param_effects_fig(placeholder=True, supervised=True):
 
     ax = axes[0]
     ax.set_title("Effect of Fully Connected Layer Size", y=1.03)
-    ax.set_xlabel("Neurons in Each Fully Connected Layer")
+    if supervised:
+        ax.set_xlabel("Neurons in Each Fully Connected Layer")
+    else:
+        ax.set_xlabel("Neurons in Each Fully Connected Layer\n"
+                      "(Fraction of # of classes)")
     ax.set_ylabel("Normalized Accuracy")
     ax = axes[1]
-    ax.set_title("Effect of Max Pooling Amount", y=1.03)
+    ax.set_title("Effect of Max Pool Size", y=1.03)
     ax.set_xlabel("Fraction of Mean Time Series Length")
+    # ax.set_xlabel("Max Pool Size\n(Fraction of Mean Time Series Length)")
     ax.set_ylabel("Normalized Accuracy")
 
     # plt.tight_layout(w_pad=.02)
@@ -200,10 +210,16 @@ def param_effects_fig(placeholder=True, supervised=True):
     # plt.tight_layout()
     # plt.subplots_adjust(bottom=.32)  # this one with horz but 2 legend cols
     # plt.subplots_adjust(bottom=.23)  # this one for vertical subplots
-    plt.subplots_adjust(bottom=.25)
+    if supervised:
+        plt.subplots_adjust(bottom=.25)
+    else:
+        plt.subplots_adjust(bottom=.27)
 
     # plt.show()
-    save_fig_png('param_effects')
+    figname = 'param_effects'
+    if not supervised:
+        figname += '_unsupervised'
+    save_fig_png(figname)
 
 
 # def net_size_fig(placeholder=True, ax=None, kind='hist'):
@@ -264,7 +280,7 @@ def pool_size_fig(kind='tsplot', **kwargs):
 # ================================================================ main
 
 def main():
-    # unused
+    # these are the old, unused version
     # net_size_fig(kind='line')
     # pool_size_fig(kind='line')
     # pool_size_fig(kind='tsplot')
@@ -273,7 +289,8 @@ def main():
     # net_size_fig(kind='hist')
     # pool_size_fig(kind='hist')
 
-    param_effects_fig()
+    # param_effects_fig()
+    param_effects_fig(supervised=False)
 
 
 if __name__ == '__main__':
