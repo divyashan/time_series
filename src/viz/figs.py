@@ -7,7 +7,7 @@ import numpy as np
 import pandas as pd
 import seaborn as sb
 
-from files import ensure_dir_exists
+from src.utils.files import ensure_dir_exists
 
 """Figures we create here:
     -Justifying design decisions / illustrating principles:
@@ -32,16 +32,16 @@ SAVE_DIR = os.path.expanduser('figs/')
 ensure_dir_exists(SAVE_DIR)
 
 ACC_PATH = 'placeholder-data/placeholder-acc-results.csv'
-# NET_SIZE_PATH = 'placeholder-data/placeholder-netsize-results.csv'
-# POOL_SIZE_PATH = 'placeholder-data/placeholder-poolsize-results.csv'
-NET_SIZE_PATH = 'src/viz/results/netsize.csv'
-POOL_SIZE_PATH = 'src/viz/results/poolsize.csv'
+# NET_SIZE_PATH_SUPERVISED = 'placeholder-data/placeholder-netsize-results.csv'
+# POOL_SIZE_PATH_SUPERVISED = 'placeholder-data/placeholder-poolsize-results.csv'
+NET_SIZE_PATH_SUPERVISED = 'src/viz/results/netsize.csv'
+POOL_SIZE_PATH_SUPERVISED = 'src/viz/results/poolsize.csv'
 
 DATASET_COL = 'dataset'
 ALGOROTHM_COL = 'algorithm'
 ACC_COL = 'accuracy'
 NET_SIZE_COL = 'size'
-POOL_SIZE_COL = 'size_pct'
+POOL_SIZE_COL = 'poolsize'
 
 # ACC_COLS = [DATASET_COL, ALGOROTHM_COL, ACC_COL]
 # NET_SIZE_COLS = [DATASET_COL, NET_SIZE_COL, ACC_COL]
@@ -79,7 +79,8 @@ def _param_effect_fig(data_path, xcol, title, xlabel, ylabel,
         best_sizes = []
         all_dsets = df[DATASET_COL].unique()
         for dset in all_dsets:
-            # print "dset: ", dset
+            print "dset: ", dset
+            print "df dset col: ", df[DATASET_COL]
             sub_df = df[df[DATASET_COL] == dset]
             idx = sub_df[ACC_COL].idxmax()
             best_sz = sub_df[xcol][idx]
@@ -129,16 +130,28 @@ def _param_effect_fig(data_path, xcol, title, xlabel, ylabel,
     plt.show()
 
 
-def param_effects_fig(placeholder=True):
+def param_effects_fig(placeholder=True, supervised=True):
     sb.set_context('talk')
     # sb.set_context('poster')
     # sb.set_context('notebook')
-    fig, axes = plt.subplots(2, figsize=(6, 8))
+    # fig, axes = plt.subplots(2, figsize=(6, 8))
+    # fig, axes = plt.subplots(1, 2, figsize=(10, 6))
+    fig, axes = plt.subplots(1, 2, figsize=(10, 5.2))
 
     KEEP_HOW_MANY = 10  # plotting too many makes fig hideous
 
-    df_fc = pd.read_csv(NET_SIZE_PATH)
-    df_pool = pd.read_csv(POOL_SIZE_PATH)
+    if supervised:
+        df_fc = pd.read_csv(NET_SIZE_PATH_SUPERVISED)
+        df_pool = pd.read_csv(POOL_SIZE_PATH_SUPERVISED)
+    else:
+        df_fc = pd.read_csv(NET_SIZE_PATH_UNSUPERVISED)
+        df_pool = pd.read_csv(POOL_SIZE_PATH_UNSUPERVISED)
+
+    # print "df fc:"
+    # print df_fc
+    # print "df_pool"
+    # print df_pool
+    # return
 
     # make sure both use the same datasets, because otherwise the
     # legend will break / be wrong
@@ -152,6 +165,7 @@ def param_effects_fig(placeholder=True):
     dsets = [dsets[i] for i in sort_idxs[:KEEP_HOW_MANY]]
 
     # print "param_effects_fig: using datasets: ", dsets
+    # return
 
     # ------------------------ top plot: fc layer size
 
@@ -160,30 +174,33 @@ def param_effects_fig(placeholder=True):
     for (df, xcol, ax) in (fc_params, pool_params):
         for dset in dsets:
             sub_df = df[df[DATASET_COL] == dset]
+            sub_df = sub_df.sort_values(xcol)
             xvals, yvals = sub_df[xcol], sub_df[ACC_COL]
+            yvals /= yvals.max()
             # name = dset.replace('_', ' ').replace('-', ' ').capitalize()
             name = dset.replace('_', ' ').replace('-', ' ')
             ax.plot(xvals, yvals, label=name)
 
     leg_lines, leg_labels = ax.get_legend_handles_labels()
     plt.figlegend(leg_lines, leg_labels, loc='lower center',
-                  ncol=2, labelspacing=0)
+                  ncol=5, labelspacing=0)
 
     ax = axes[0]
     ax.set_title("Effect of Fully Connected Layer Size", y=1.03)
     ax.set_xlabel("Neurons in Each Fully Connected Layer")
-    ax.set_ylabel("Accuracy")
+    ax.set_ylabel("Normalized Accuracy")
     ax = axes[1]
     ax.set_title("Effect of Max Pooling Amount", y=1.03)
     ax.set_xlabel("Fraction of Mean Time Series Length")
-    ax.set_ylabel("Accuracy")
+    ax.set_ylabel("Normalized Accuracy")
 
     # plt.tight_layout(w_pad=.02)
     # plt.tight_layout(h_pad=2.0)
     plt.tight_layout(h_pad=1.8)
     # plt.tight_layout()
-    # plt.subplots_adjust(bottom=.28)
-    plt.subplots_adjust(bottom=.23)
+    # plt.subplots_adjust(bottom=.32)  # this one with horz but 2 legend cols
+    # plt.subplots_adjust(bottom=.23)  # this one for vertical subplots
+    plt.subplots_adjust(bottom=.25)
 
     # plt.show()
     save_fig_png('param_effects')
@@ -193,7 +210,7 @@ def param_effects_fig(placeholder=True):
 def net_size_fig(kind='tsplot', **kwargs):
     if kind == 'tsplot':
         _param_effect_fig(
-            data_path=NET_SIZE_PATH,
+            data_path=NET_SIZE_PATH_SUPERVISED,
             xcol=NET_SIZE_COL,
             title='Fully Connected Layer size vs Accuracy',
             xlabel='Neurons in each fully connected layer',
@@ -201,7 +218,7 @@ def net_size_fig(kind='tsplot', **kwargs):
             kind=kind, **kwargs)
     elif kind == 'hist':
         _param_effect_fig(
-            data_path=NET_SIZE_PATH,
+            data_path=NET_SIZE_PATH_SUPERVISED,
             xcol=NET_SIZE_COL,
             title='Distribution of Best FC Layer Sizes',
             xlabel='Log2(Neurons in each fully connected layer)',
@@ -209,7 +226,7 @@ def net_size_fig(kind='tsplot', **kwargs):
             kind=kind, **kwargs)
     elif kind == 'line':
         _param_effect_fig(
-            data_path=NET_SIZE_PATH,
+            data_path=NET_SIZE_PATH_SUPERVISED,
             xcol=NET_SIZE_COL,
             title='Fully Connected Layer Size vs Accuracy',
             xlabel='Neurons in each fully connected layer',
@@ -220,7 +237,7 @@ def net_size_fig(kind='tsplot', **kwargs):
 def pool_size_fig(kind='tsplot', **kwargs):
     if kind == 'tsplot':
         _param_effect_fig(
-            data_path=POOL_SIZE_PATH,
+            data_path=POOL_SIZE_PATH_SUPERVISED,
             xcol=POOL_SIZE_COL,
             title='Max Pool Size vs Accuracy',
             xlabel='Max pool size (fraction of mean time series length)',
@@ -228,7 +245,7 @@ def pool_size_fig(kind='tsplot', **kwargs):
             kind=kind, **kwargs)
     elif kind == 'hist':
         _param_effect_fig(
-            data_path=POOL_SIZE_PATH,
+            data_path=POOL_SIZE_PATH_SUPERVISED,
             xcol=POOL_SIZE_COL,
             title='Distribution of Best Max Pool Sizes',
             xlabel='Max pool size (fraction of mean time series length)',
@@ -236,7 +253,7 @@ def pool_size_fig(kind='tsplot', **kwargs):
             kind=kind, **kwargs)
     elif kind == 'line':
         _param_effect_fig(
-            data_path=POOL_SIZE_PATH,
+            data_path=POOL_SIZE_PATH_SUPERVISED,
             xcol=POOL_SIZE_COL,
             title='Max Pooling Size vs Accuracy',
             xlabel='Max pool size (fraction of mean time series length)',

@@ -1,3 +1,6 @@
+
+
+// ------------------------ version with kshape
 \begin{tabular}{l|c|cc}
 Dataset                 &  Jiffy & LDPS   &  K-Shape \\
 \hline
@@ -7,4 +10,17 @@ CharacterTrajectories   & \b{0.9653} & 0.9385 &  0.9615 \\
 ECG                     & 0.5861 & 0.5497 &  \b{0.6231} \\
 Libras                  & \b{0.8827} & 0.8693 &  0.4748 \\
 Wafer                   & \b{0.7460} & 0.5535 &  0.5455 \\
+\end{tabular}
+
+
+// ------------------------ version without kshape
+\begin{tabular}{l|c|cccc}
+Dataset                 &  Jiffy    & LDPS      & SPIRAL & Zero-Padding & Upsampling  \\
+\hline
+ArabicDigits            &    0.849  &    0.826  & 0.870  &    0.887     & \b{0.928} \\
+AUSLAN                  & \b{0.990} & \b{0.990} & 0.868  &    0.982     &    0.982  \\
+CharacterTrajectories   & \b{0.965} &    0.939  & 0.886  & \b{0.965}    &    0.959  \\
+ECG                     & \b{0.586} &    0.550  & 0.505  &    0.581     & \b{0.627} \\
+Libras                  &    0.883  &    0.870  & 0.881  &    0.907     & \b{0.913} \\
+Wafer                   & \b{0.746} &    0.554  & 0.448  &    0.500     &    0.596  \\
 \end{tabular}

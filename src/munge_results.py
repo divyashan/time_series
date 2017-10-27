@@ -19,6 +19,7 @@ RESULTS_DIR = 'src/final-results'
 UCR_PATH = os.path.join(RESULTS_DIR, 'ucr-accuracies.csv')
 # UCI_PATH = os.path.join(RESULTS_DIR, 'uci-err-rates.csv')
 UCI_PATH = os.path.join(RESULTS_DIR, 'uci-accuracies.csv')
+UCI_PATH_UNSUPERVISED = os.path.join(RESULTS_DIR, 'unsupervised-results-cleaned.csv')
 # UCI_ALL_PATH = os.path.join(RESULTS_DIR, 'uci-accuracies-all.csv')
 
 
@@ -85,6 +86,7 @@ def main():
     # # cd_diagram(pd.read_csv(DECADE_PATH), lower_better=False)
     # # cd_diagram(pd.read_csv(UCR_PATH), lower_better=False)
     # cd_diagram(pd.read_csv(UCI_PATH), lower_better=False)
+    cd_diagram(pd.read_csv(UCI_PATH_UNSUPERVISED), lower_better=False)
     # # cd_diagram(pd.read_csv(UCI_ALL_PATH), lower_better=False)
     # plt.show()
     # return
