@@ -1,0 +1,32 @@
+import pandas as pd
+import seaborn
+
+
+
+datasets = ['trajectories', 'arabic_digits', 'ecg', 'libras', 'wafer', 'auslan']
+
+knn_accuracies = [[0.9875666074600356, 0.9875666074600356, 0.9875666074600356],
+  [0.978161965423112, 0.978161965423112, 0.9790718835304822], 
+  [0.8918918918918919, 0.8648648648648649, 0.8378378378378378], 
+  [0.9137931034482759, 0.8103448275862069, 0.6379310344827587], 
+  [0.9872881355932204, 0.9915254237288136, 0.9915254237288136], 
+  [0, 0, 0]]
+
+cnn_accuracies = [0.98579043,0.96906281, 0.78378379, 0.51724136, 0.9915254, 0]
+
+max_pooling_accs = [85.44, 75.07, 75.68, 72.41, 97.46, 0.0]
+
+multi_conv_accs = [99.11, 97.73, 83.78, 93.10, 96.61, 0.0]
+
+results = []
+for i, dataset in enumerate(datasets):
+	for k in range(3):
+		result = dict()
+		result['acc'] = knn_accuracies[i][k]
+		result['method'] = 'KNN'
+		result['K']: k
+	results.append(result)
+
+
+dataframe:
+dataset, K, KNN or CNN, acc

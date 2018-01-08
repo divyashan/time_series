@@ -3,8 +3,11 @@ import tensorflow as tf
 from itertools import product
 import scipy
 import pdb
+from scipy.stats import mode
 from scipy.misc import comb
 import matplotlib.pyplot as plt
+from fastdtw import fastdtw
+
 
 NUM_DIFF=10
 UCR_DATASETS = ['50Words', 'Adiac', 'ArrowHead', 'Beef', 'BeetleFly', 'BirdChicken', 'CBF', 'Car', 'ChlorineConcentration', 
@@ -20,7 +23,7 @@ UCR_DATASETS = ['50Words', 'Adiac', 'ArrowHead', 'Beef', 'BeetleFly', 'BirdChick
                           'Swedish Leaf', 'Symbols', 'Synthetic Control', 'ToeSegmentation1', 'ToeSegmentation2', 'Trace', 'Two Patterns', 
                           'TwoLeadECG', 'UWaveGestureLibraryAll', 'Wafer', 'Wine', 'WordSynonyms', 'Worms', 'WormsTwoClass', 'Yoga', 
                           'uWaveGestureLibrary_X', 'uWaveGestureLibrary_Y', 'uWaveGestureLibrary_Z']
-MV_DATASETS = ['arabic_digits', 'auslan', 'trajectories', 'libras', 'wafer', 'ecg']
+MV_DATASETS = ['arabic_digits', 'auslan', 'trajectories', 'libras', 'wafer', 'ecg', 'eeg']
 NEG_LABEL = 1
 SAME_LABEL = 0
 
@@ -193,6 +196,22 @@ def evaluate_train_embedding(train_embedding, tr_y):
             n_correct += 1
     return n_correct/len(tr_y)
 
+def evaluate_KNN(train_embedding, tr_y, test_embedding, test_y, k=1):
+  n_correct = 0.0
+  n_sample = 0
+  correct = []
+  for sample, correct_label in zip(test_embedding, test_y):
+    sorted_training_k = tr_y[np.argsort([np.linalg.norm(sample-row) for row in train_embedding])[:k]]
+    mode_val = mode(sorted_training_k).mode[0]
+    if correct_label == mode_val:
+      n_correct += 1
+      correct.append(n_sample)
+    else:
+      print n_sample
+    n_sample += 1
+  print len(correct), n_correct, len(test_y)
+  return n_correct/len(test_y)
+
 def classify_sample(output, train_embedding, tr_y):
     dists = [np.linalg.norm(output-row) for row in train_embedding]
     return tr_y[np.argmin(dists)]
@@ -248,7 +267,6 @@ def eval_clustering(pred_labels, labels):
   labels = np.array([int(x) for x in labels])
   pred_labels = np.array(pred_labels)
   kmean_sort_ind = np.argsort(labels)
-  pdb.set_trace()
   pred_labels = pred_labels.labels_[kmean_sort_ind]
 
   labels = labels[kmean_sort_ind]
@@ -265,3 +283,71 @@ def eval_clustering(pred_labels, labels):
   nmi = normalized_mutual_info_score(pred_labels, labels)
   print 'Rand Index: ', rand_ind
   return rand_ind
+
+
+def compute_pairwise_distances(train_embedding, y_train):
+  D = scipy.spatial.distance.squareform(scipy.spatial.distance.pdist(train_embedding))
+  distances = []
+
+  # 1 or 0 for same or different original class
+  distance_labels = []
+  for i in range(len(D)):
+    for j in range(len(D)):
+      distances.append(D[i][j])
+      distance_label = 0
+      if y_train[i] == y_train[j]:
+        distance_label = 1
+      distance_labels.append(distance_label)
+  return np.array(distances), np.array(distance_labels)
+
+def compute_distances_to_points(train_points, train_labels, test_embedding, y_test):
+  distances = []
+  distance_labels = []
+  for j in range(len(train_points)):
+    for i in range(len(test_embedding)):
+      distance = np.linalg.norm(train_points[j] - test_embedding[i])
+      distances.append(distance)
+
+      distance_label = 0
+      if y_test[i] == train_labels[j]:
+        distance_label = 1
+      distance_labels.append(distance_label)
+  return np.array(distances), np.array(distance_labels)
+
+def compute_dtw_distances_to_points(train_points, train_labels, test_embedding, y_test):
+  distances = []
+  distance_labels = []
+  for j in range(len(train_points)):
+    for i in range(len(test_embedding)):
+      distance = fastdtw(train_points[j],test_embedding[i])[0]
+      distances.append(distance)
+
+      distance_label = 0
+      if y_test[i] == train_labels[j]:
+        distance_label = 1
+      distance_labels.append(distance_label)
+  return np.array(distances), np.array(distance_labels)
+
+
+
+def compute_dtw_pairwise_distances(train_embedding, y_train):
+  distances = []
+  distance_labels = []
+  for i in range(len(train_embedding)):
+    for j in range(len(train_embedding)):
+      distance_label = 0
+      if y_train[i] == y_train[j]:
+        distance_label = 1
+
+      distances.append(fastdtw(train_embedding[i], train_embedding[j])[0])
+      distance_labels.append(distance_label)
+
+
+
+  return np.array(distances), np.array(distance_labels)
+
+
+
+
+
+

@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 import numpy as np
+import pdb
 from joblib import Memory
 
 from .. import paths
@@ -18,22 +19,24 @@ def _all_data_files():
 
     all_data_files = []
     for d in subsubdirs:
-        all_data_files += files.list_files(d, abs_paths=True, endswith='.tsd')
+        all_data_files += files.list_files(d, abs_paths=True, endswith='.tsd')[:75]
 
     return all_data_files
 
 
 @_memory.cache
 def all_X():
+    print "Generating all X"
+    pdb.set_trace()
     return [np.genfromtxt(path, delimiter='\t') for path in _all_data_files()]
 
 
-@_memory.cache
+#@_memory.cache
 def _all_raw_labels():
     return [path.split('/')[-1].split('-')[0].strip('_') for path in _all_data_files()]
 
 
-@_memory.cache
+#@_memory.cache
 def all_labels():
     all_labels = _all_raw_labels()
 

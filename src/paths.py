@@ -22,6 +22,10 @@ ROBOT_FAILURE = to_path('robot-failure')
 ECG = to_path('ecg')
 WAFER = to_path('wafer')
 
+# datasets from PhysioNet
+EEG = to_path('eeg')
+
+
 
 # ================================================================ main
 

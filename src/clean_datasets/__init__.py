@@ -6,8 +6,9 @@ from sklearn.model_selection import StratifiedKFold
 
 
 from . import arabic_digits, auslan, ecg, libras, pen_digits
-from . import robot_failure, trajectories, vowels, wafer
+from . import robot_failure, trajectories, vowels, wafer, eeg
 
+import pdb
 
 # UCI archive datasets
 ARABIC_DIGITS = 'arabic_digits'
@@ -21,6 +22,7 @@ ROBOT_FAILURE_LP2 = 'robot_failure_lp2'
 ROBOT_FAILURE_LP3 = 'robot_failure_lp3'
 ROBOT_FAILURE_LP4 = 'robot_failure_lp4'
 ROBOT_FAILURE_LP5 = 'robot_failure_lp5'
+EEG = 'eeg'
 # datasets from http://www.cs.cmu.edu/~bobski/data/data.html
 ECG = 'ecg'
 WAFER = 'wafer'
@@ -43,6 +45,7 @@ _DSET_TO_MODULE = {
     ROBOT_FAILURE_LP5: robot_failure.lp5,
     ECG: ecg,
     WAFER: wafer,
+    EEG: eeg
     }
 
 ALL_DATASETS = sorted(_DSET_TO_MODULE.keys())
@@ -67,8 +70,8 @@ def cv_splits(X, y, n_folds=5):
 
     splits = []
     for train_idxs, test_idxs in skf.split(X_ignore, y):
-        # print "train idxs: ", train_idxs
-        # print "test idxs: ", test_idxs
+        #print "train idxs: ", train_idxs
+        #print "test idxs: ", test_idxs
         splits.append(CVSplit(X_train=[X[idx] for idx in train_idxs],
                       y_train=y[train_idxs],
                       X_test=[X[idx] for idx in test_idxs],
@@ -116,7 +119,7 @@ def cv_splits_for_dataset(dset_name, n_folds=5, length_adjust=None):
     try:
         X_train, y_train = mod.train_data()
         X_test, y_test = mod.test_data()
-
+        print "Training/Testing split exists"
         if length_adjust == 'pad':
             X_train = _pad_to_same_length(X_train)
             X_test = _pad_to_same_length(X_test)
@@ -129,7 +132,6 @@ def cv_splits_for_dataset(dset_name, n_folds=5, length_adjust=None):
 
     except AttributeError:
         X, y = mod.all_data()
-
         if length_adjust == 'pad':
             X = _pad_to_same_length(X)
         elif length_adjust == 'upsample':

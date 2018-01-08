@@ -1,0 +1,27 @@
+LDPS
+Arabic Digits: 0.825700105384
+wafer: 0.553519202607
+auslan: 0.979997392802
+trajectories: 0.938567642168
+libras: 0.869359331476
+ecg: 0.539748743719
+
+
+Jiffy:
+Arabic Digits: 0.84943170195
+wafer:0.746078815424
+auslan: 0.979605172894
+trajectories: 0.965358096901
+libras: 0.882760755184
+ecg: 0.586130653266
+
+
+K-Shape:
+Arabic Digits: .93
+wafer: 0.545579251384
+auslan: segfault
+trajectories: 0.961568127392
+libras: 0.474899411947
+ecg: 0.623115577889
+
+
