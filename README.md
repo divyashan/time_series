@@ -1,6 +1,6 @@
 # Jiffy: A Convolutional Approach to Time Series Similarity
 
-Jiffy is a lightweight CNN that produces a data-dependent embedding for a time series dataset. Results can be reproduced by running the following command: 
+Jiffy is a lightweight CNN that produces a data-dependent embedding for a time series dataset. Follow the testing instructions below to reproduce the paper's results.
 
 ## Testing Instructions
 
