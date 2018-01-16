@@ -5,16 +5,16 @@ Jiffy is a lightweight CNN that produces a data-dependent embedding for a time s
 ## Testing Instructions
 
 We test the implementation on 6 publicly available datasets: 
-* arabic_digits  [download here](http://archive.ics.uci.edu/ml/machine-learning-databases/00195/)
-* AUSLAN         [download here](https://archive.ics.uci.edu/ml/machine-learning-databases/auslan2-mld/auslan.data.html)
-* character_trajectories [download here](https://archive.ics.uci.edu/ml/datasets/Character+Trajectories)
-* libras [download here](https://archive.ics.uci.edu/ml/datasets/Libras+Movement)
-* ecg [download here](http://www.cs.cmu.edu/~bobski/data/data.html)
-* wafer [download here](http://www.cs.cmu.edu/~bobski/data/data.html)
+* arabic_digits:  [access here](http://archive.ics.uci.edu/ml/machine-learning-databases/00195/)
+* AUSLAN:         [access here](https://archive.ics.uci.edu/ml/machine-learning-databases/auslan2-mld/auslan.data.html)
+* character_trajectories: [access here](https://archive.ics.uci.edu/ml/datasets/Character+Trajectories)
+* libras: [access here](https://archive.ics.uci.edu/ml/datasets/Libras+Movement)
+* ecg: [access here](http://www.cs.cmu.edu/~bobski/data/data.html)
+* wafer: [access here](http://www.cs.cmu.edu/~bobski/data/data.html)
 
 
 
-Create the datasets directory by running the following script in the root directory:
+But there's no need to download them all separately! Create the datasets directory by running the following script in the root directory:
 
 ```
 ./download_datasets.sh
