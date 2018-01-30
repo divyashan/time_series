@@ -12,6 +12,8 @@ from time_series.src.clean_datasets import cv_splits_for_dataset
 from time_series.tsne_python import tsne
 from time_series.parse_dataset.readUcr import UCRDataset
 from time_series.parse_dataset.readEEG import loadEEG
+from time_series.parse_dataset.readECG import loadECG
+
 from time_series.src.clean_datasets import cv_splits_for_dataset
 
 import seaborn
@@ -25,13 +27,13 @@ from scipy.stats import spearmanr
 
 POOL_PCTG = .1
 STRIDE_WIDTH = 10
-PRINT = False
+PRINT = True
 
 """Hyperparameters"""
 num_filt_1 = 8    #Number of filters in first conv layer
-num_fc_1 = 40       #Number of neurons in hully connected layer
-max_iterations = 4000
-batch_size = 64
+num_fc_1 = 2       #Number of neurons in hully connected layer
+max_iterations = 300
+batch_size = 256
 dropout = 1      #Dropout rate in the fully connected layer
 learning_rate = 2e-4
 
@@ -84,15 +86,26 @@ def test_model(dataset, pool_pctg, layer_size_1):
     Ntest = X_test.shape[0]
     D = X_train.shape[1]
     D_ts = X_train.shape[2]
-  else: 
+  elif dataset == "EEG":
     X_train, y_train, X_test, y_test = loadEEG()
-    pdb.set_trace()
 
     X_val = X_test[:2]
     y_val = y_test[:2]
     X_test = X_test[2:]
     y_test = y_test[2:]
     
+    n = max([np.max([v.shape[0] for v in X_train]), np.max([v.shape[0] for v in X_test])])
+    if n % STRIDE_WIDTH != 0:
+      n = n + (STRIDE_WIDTH - (n % STRIDE_WIDTH))
+    X_train = standardize_ts_lengths(X_train, n)
+    X_test = standardize_ts_lengths(X_test, n)
+
+    N = X_train.shape[0]
+    Ntest = X_test.shape[0]
+    D = X_train.shape[1]
+    D_ts = X_train.shape[2]
+  else:
+    X_train, y_train, X_test, y_test = loadECG()
     n = max([np.max([v.shape[0] for v in X_train]), np.max([v.shape[0] for v in X_test])])
     if n % STRIDE_WIDTH != 0:
       n = n + (STRIDE_WIDTH - (n % STRIDE_WIDTH))
@@ -133,7 +146,7 @@ def test_model(dataset, pool_pctg, layer_size_1):
     # ewma is the decay for which we update the moving average of the
     # mean and variance in the batch-norm layers
   with tf.name_scope("Conv1") as scope:
-    W_conv1 = tf.get_variable("Conv_Layer_1", shape=[1, 5, 1, num_filt_1],initializer=initializer)
+    W_conv1 = tf.get_variable("Conv_Layer_1", shape=[1, 50, 1, num_filt_1],initializer=initializer)
     b_conv1 = bias_variable([num_filt_1], 'bias_for_Conv_Layer_1')
     a_conv1 = conv2d(x_image, W_conv1) + b_conv1
 
@@ -208,7 +221,7 @@ def test_model(dataset, pool_pctg, layer_size_1):
           result = sess.run(accuracy, feed_dict={ x: X_test, y_: y_test, keep_prob: 1.0})
           acc_test_before = result
 
-      if i%500 == 0:
+      if i%50 == 0:
         #Check training performance
 
         result = sess.run([cost,accuracy],feed_dict = { x: X_train, y_: y_train, keep_prob: 1.0})
@@ -226,7 +239,7 @@ def test_model(dataset, pool_pctg, layer_size_1):
 
         writer.flush()  #Don't forget this command! It makes sure Python writes the summaries to the log-file
         if PRINT == True:
-          print("At %5.0f/%5.0f Cost: train%5.3f val%5.3f(%5.3f) Acc: train%5.3f " % (i,max_iterations, cost_train,cost_val,cost_ma,acc_train))
+          print("At %5.0f/%5.0f Cost: train%5.3f Acc: train%5.3f " % (i,max_iterations, cost_train, acc_train))
         step +=1
       gg = h_relu.eval(feed_dict={x:X_train[batch_ind], y_: y_train[batch_ind], keep_prob: dropout})
       sess.run(train_step,feed_dict={x:X_train[batch_ind], y_: y_train[batch_ind], keep_prob: dropout})
@@ -239,6 +252,7 @@ def test_model(dataset, pool_pctg, layer_size_1):
     test_acc = evaluate_test_embedding(train_embedding, y_train, test_embedding, y_test)
 
     print('Accuracy given NN approach %0.2f \n' %(100*test_acc))
+    pdb.set_trace()
     return test_acc
 
 if __name__ == "__main__":
