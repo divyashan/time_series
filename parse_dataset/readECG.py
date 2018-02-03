@@ -4,53 +4,69 @@ import pdb
 from sklearn.model_selection import train_test_split
 
 
-DATASET_DIR = "/Volumes/My Book/merlin_final"
+DATASET_DIR = "../jiffy_experiments/adjacent_beats/"
 
+def get_dataset_path(pid):
+	return DATASET_DIR + "patient_" + str(pid) + ".csv"
 """
 def loadECG():
 
-	train_files = [1, 2, 3, 4]
-	test_files = [1, 2, 3, 4]
-	train_death = 
+	train_files = [80.0, 3.0, 102.0, 762.0 ]
+	test_files = [694.0, 9.0]]
+	test_list = []
+	train_list = []
 	for i in train_files:
 
-	train_death = np.loadtxt("./datasets/patient_data_death_0.csv", delimiter=",")
-	test_death = np.loadtxt("./datasets/patient_data_death_1.csv", delimiter=",")
-	train_survive = np.loadtxt("./datasets/patient_data_survive_0.csv", delimiter=",")
-	test_survive = np.loadtxt("./datasets/patient_data_survive_1.csv", delimiter=",")
+		train_death = np.loadtxt( DATASET_DIR + "death_" +  str(i) + ".csv", delimiter=",")	
+		train_survive = np.loadtxt(DATASET_DIR + "survive_" + str(i) + ".csv", delimiter=",")
+		train_list.append(train_death)
+		train_list.append(train_survive)
 
-	train = np.concatenate((train_death, train_survive))
-	test = np.concatenate((test_death, test_survive))
 
-	X_train = train[:,2:300000]
+	for i in test_files:
+
+		test_death = np.loadtxt( DATASET_DIR + "death_" +  str(i) + ".csv", delimiter=",")	
+		test_survive = np.loadtxt(DATASET_DIR + "survive_" + str(i) + ".csv", delimiter=",")
+		test_list.append(test_death)
+		test_list.append(test_survive)
+	train = np.concatenate(train_list)
+	test = np.concatenate(test_list)
+
+	X_train = train[:,2:]
 	y_train = train[:,1]
 
-	X_test = test[:,2:300000]
+	X_test = test[:,2:]
 	y_test = test[:,1]
 
 
 	return np.expand_dims(X_train, 1), y_train, np.expand_dims(X_test, 1), y_test
 """
 def loadECG():
-	train_patients = [80.0, 102.0, 1.0,3.0]
-	test_patients = [694.0, 704.0, 4.0, 18.0]
+	death_patients = [80.0, 1050.0, 102.0] 
+	normal_patients = [1.0, 1030.0, 1070.0]
 
 
-	train_list = []
-	test_list = []
-	for pid in train_patients:
-		f_path = "./datasets/adjacent_beats/patient_" + str(pid) + ".csv"
+	death_list = []
+	normal_list = []
+	for pid in death_patients:
+		f_path = "./datasets/adjacent_beats/death/patient_" + str(pid) + ".csv"
 		pid_mat = np.loadtxt(f_path)
-		train_list.append(pid_mat)
+		death_list.append(pid_mat)
 	
-	for pid in test_patients:
-		f_path = "./datasets/adjacent_beats/patient_" + str(pid) + ".csv"
+	for pid in normal_patients:
+		f_path = "./datasets/adjacent_beats/normal/patient_" + str(pid) + ".csv"
 		pid_mat = np.loadtxt(f_path)
-		test_list.append(pid_mat)
+		normal_list.append(pid_mat)
+	n_death = 1100
+	n_normal = 1000
+	death_list = np.concatenate(death_list)
+	normal_list = np.concatenate(normal_list)
 
-	train = np.concatenate(train_list)
-	test = np.concatenate(test_list)
-	pdb.set_trace()
+	death_idxs = np.random.choice(len(death_list), n_death*2)	
+	normal_idxs = np.random.choice(len(normal_list), n_normal*2)
+	train = np.concatenate([death_list[death_idxs[:n_death]], normal_list[normal_idxs[:n_normal]]])
+	test = np.concatenate([death_list[death_idxs[n_death:]], normal_list[normal_idxs[n_normal:]]])
+	
 	X_train = train[:,2:]
 	y_train = train[:,1]
 
@@ -59,3 +75,4 @@ def loadECG():
 
 	print "Finished loading data"
 	return np.expand_dims(X_train, 1), y_train, np.expand_dims(X_test, 1), y_test
+

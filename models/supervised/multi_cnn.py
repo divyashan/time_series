@@ -30,10 +30,10 @@ STRIDE_WIDTH = 10
 PRINT = True
 
 """Hyperparameters"""
-num_filt_1 = 8    #Number of filters in first conv layer
-num_fc_1 = 2       #Number of neurons in hully connected layer
-max_iterations = 300
-batch_size = 256
+num_filt_1 = 1    #Number of filters in first conv layer
+num_fc_1 = 40       #Number of neurons in hully connected layer
+max_iterations = 800
+batch_size = 24 
 dropout = 1      #Dropout rate in the fully connected layer
 learning_rate = 2e-4
 
