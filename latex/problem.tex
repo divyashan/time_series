@@ -1,0 +1,42 @@
+
+We first define relevant terms, frame the problem, and state our assumptions.
+
+\begin{Definition}{\textbf{Time Series} A $D$-variable time series $X$ of length $T$ is a sequence of real-valued vectors $\x_1,\ldots,\x_T, \x_i \in \mathbb{R}^D$. If $D = 1$, we call $X$ ``univariate'', and if $D > 1$, we call $X$ ``multivariate.''} We denote the space of possible $D$-variable time series $\mathcal{T}^D$.
+\end{Definition}
+\begin{Definition}{\textbf{Distance Metric} A distance metric is defined a distance function $d: \mathcal{S} \times \mathcal{S} \rightarrow \mathbb{R}$ over a set of objects $\mathcal{S}$ such that, for any $x, y \in \mathcal{S}$, the following properties hold:
+
+\begin{itemize}
+	\item Symmetry: $d(x,y) = d(y,x)$
+    \item Non-negativity: $d(x, y) \geq 0$
+    \item Triangle Inequality: $d(x,z) + d(y,z) \geq d(x, z)$
+    \item Identity of Indiscernibles: $x = y \Leftrightarrow d(x, y) = 0$
+\end{itemize}}
+\end{Definition}
+
+Our approach to learning a metric is to first learn an embedding into a fixed-size vector space, and then use the Euclidean distance on the embedded vectors to measure similarity. Formally, we learn a function $f: \mathcal{T}^D \rightarrow \mathbb{R}^N$ and compute the distance between time series $X, Y \in \mathcal{T}^D$ as:
+\begin{align}
+	d(X, Y) \triangleq \norm{f(X) - f(Y)}_2
+\end{align}
+
+% One approach to learning a metric is to first learn an embedding into a fixed-size vector space, and then use the Euclidean distance on the embedded vectors to measure similarity.
+
+% We adopt this approach in developing a distance measure of multivariate time series comparison. The resulting distance measure is evaluated based on its nearest-neighbor classification accuracy. % In particular, we focus on learning a distance measure for classification and clustering of time series.
+
+% ------------------------------------------------
+\subsection{Assumptions}
+% ------------------------------------------------
+
+Jiffy depends on two assumptions about the time series being embedded. First, we assume that all time series are primarily ``explained'' by one class. This means that we do not consider multi-label tasks or tasks wherein only a small subsequence within each time series is associated with a particular label, while the rest is noise or phenomena for which we have no class label. This assumption is implicitly made by  most existing work \citep{dataDicts} and is satisfied whenever one has recordings of individual phenomena, such as gestures, heartbeats, or actions. % The last situation occurs when time series consist of longitudinal sensor measurements \citep{neverEnding,dataDicts}. 
+
+% ^ TODO not totally satisfied with last sentence
+
+The second assumption is that the time series dataset is not too small, in terms of either number of time series or their lengths. Specifically, we do not consider datasets in which the longest time series is of length $T < 40$ or the number of examples per class is less than $25$. The former number is the smallest number such that our embedding will not be longer than the input in the univariate case, while the latter is the smallest number found in any of our experimental datasets (and therefore the smallest on which we can claim reasonable performance).
+
+For datasets too small to satisfy these constraints, we recommend using a traditional distance measure, such as Dynamic Time Warping, that does not rely on a learning phase.
+
+% \subsection{Why is this task}
+
+% The method rests on two major assumptions. We assume all input time series are of fixed length and preprocess inputs which violate this assumption with zero-padding. Additionally, we assume that each time series example's label corresponds to the entire signal as opposed to a small subsequence. This disqualifies time series datasets in which long signals consist of tagged subsequences; for example, motion in a video.
+
+% We exclusively operate on time series which are sufficiently long and we define 'sufficiently long' as any time series of length $N$ where $N \geq 40$.  We justify this choice in the method section.
+

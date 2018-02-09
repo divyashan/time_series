@@ -1,0 +1,59 @@
+
+
+Measuring distances between examples is a fundamental component of many classification, clustering, segmentation and anomaly detection algorithms for time series \citep{ucrSuite,shotgunDistance,dtwClustering,dtwClusteringWarp}. Because the distance measure used can have a significant effect on the quality of the results, there has been a great deal of work developing effective time series distance measures \citep{weightedDTW,tsDiscord, bakeoff2016,dtwClustering, tsBakeoff2008}. Historically, most of these measures have been hand-crafted. However, recent work has shown that a learning approach can often perform better than traditional techniques \citep{multimodalMetric,mddtw,decade}.
+
+% We introduce a metric learning model for time series embedding that produces a distance measure for multivariate time series comparison. 
+
+We introduce a metric learning model for multivariate time series. Specifically, by learning to embed time series in Euclidean space, we obtain a metric that is both highly effective and simple to implement using modern machine learning libraries. Unlike many other deep metric learning approaches for time series, we use a convolutional, rather than a recurrent, neural network, to construct the embedding. This choice, in combination with aggressive maxpooling and downsampling, results in a compact, accurate network. % The learned metric outperforms state-of-the-art methods with respect to both clustering and classification of multivariate time series.
+
+Using a convolutional neural network for metric learning \textit{per se} is not a novel idea \citep{deepLifted, facenet}; however, time series present a set of challenges not seen together in other domains, and how best to embed them is far from obvious. In particular, time series suffer from:
+\begin{enumerate}
+\item \textit{A lack of labeled data}. Unlike text or images, time series cannot typically be annotated post-hoc by humans. This has given rise to efforts at unsupervised labeling \citep{extract}, and is evidenced by the small size of most labeled time series datasets. Of the 85 datasets in the UCR archive \citep{ucrArchive}, for example, the largest dataset has fewer than $17000$ examples, and many have only a few hundred.
+\item \textit{A lack of large corpora}. In addition to the difficulty of obtaining labels, most researchers have no means of gathering even \textit{unlabeled} time series at the same scale as images, videos, or text. Even the largest time series corpora, such as those on Physiobank \citep{physiobank}, are tiny compared to the virtually limitless text, image, and video data available on the web. 
+\item \textit{Extraneous data}. There is no guarantee that the beginning and end of a time series correspond to the beginning and end of any meaningful phenomenon. I.e., examples of the class or pattern of interest may take place in only a small interval within a much longer time series. The rest of the time series may be noise or transient phenomena between meaningful events \citep{epenthesis,neverEnding}.
+\item \textit{Need for high speed}. One consequence of the presence of extraneous data is that many time series algorithms compute distances using every window of data within a time series \citep{motifExact,extract,epenthesis}. A time series of length $T$ has $O(T)$ windows of a given length, so it is essential that the operations done at each window be efficient. 
+\end{enumerate}
+
+% The quality of analyses that rest on time series comparison is directly affected by the quality of the distance measure. Desirable properties of a distance measure also include simplicity, scalability, and generality across domains.
+
+As a result of these challenges, an effective time series distance metric must exhibit the following properties:
+\begin{itemize}
+	\item Efficiency: Distance measurement must be fast, in terms of both training time and inference time.
+	\item Simplicity: As evidenced by the continued dominance of the Dynamic Time Warping (DTW) distance \citep{dtw} in the presence of more accurate but more complicated rivals, a distance measure must be simple to understand and implement.
+	\item Accuracy: Given a labeled dataset, the metric should yield a smaller distance between similarly labeled time series. This behavior should hold even for small training sets.
+    %In the unsupervised case, the metric should improve the effectiveness or speed of clustering or other unsupervised learning algorithms. In both cases, it should do so even for small training sets. % clustering algorithm to observe the sources of latent variation in the time series.
+\end{itemize}
+
+Our primary contribution is a time series metric learning method, \textit{Jiffy}, that exhibits all of these properties: it is fast at both training and inference time, simple to understand and implement, and consistently outperforms existing methods across a variety of datasets.
+
+We introduce the problem statement and the requisite definitions in Section 2. We summarize existing state-of-the-art approaches (both neural and non-neural) in Section 3 and go on to detail our own approach in Section 4. We then present our results in Section 5. The paper concludes with implications of our work and avenues for further research.
+
+% \section{Problem Statement}
+% We first define relevant terms, frame the given problem and state our assumptions.
+
+% \begin{Definition}{\textbf{Time Series} A $D$-variable time series $\vec{t}$ of length $T$ is a sequence of real-valued vectors $t_1,\ldots,t_T, t_i \in \mathbb{R}^D$. If $D = 1$, we call $\vec{t}$ ``univariate'', and if $D > 1$, we call $\vec{t}$ ``multivariate.''}
+% \end{Definition}
+
+% \begin{Definition}{\textbf{Subsequence} A subsequence $\vec{s}$ of a time series $\t$ is a $D$-variable time series consisting of a contiguous sequence of elements $\{\t_i,\cdots,\t_{i+M - 1}$ for some $i$, where $M$ is the length of the subsequence.}
+% \end{Definition}
+
+% % \begin{Definition}{\textbf{Metric} A distance metric on the space $\mathbb{R}^N$ is a function $d: \mathbb{R}^N \times \mathbb{R}^N \rightarrow \mathbb{R}$ such that, for any $x, y \in \mathbb{R}^N$, the following properties hold:
+% \begin{Definition}{\textbf{Metric} A distance metric on the space $\mathbb{R}^N$ is a function $d: \mathbb{R}^N \times \mathbb{R}^N \rightarrow \mathbb{R}$ such that, for any $x, y \in \mathbb{R}^N$, the following properties hold:
+% \begin{itemize}
+% 	\item Symmetry: $d(x,y) = d(y,x)$
+%     \item Non-negativity: $d(x, y) \geq 0$
+%     \item Triangle Inequality: $d(x,z) + d(y,z) \geq d(x, z)$
+%     \item Identity of Indiscernibles: $x = y \Leftrightarrow d(x, y) = 0$
+% \end{itemize}}
+% \end{Definition}
+
+% \subsection{Problem}
+
+% Given time series $T_0$ and $T_1$, we aim to produce a distance function $F$ that, when fed both time series, produces a metric that represents dissimilarity between examples. Let us refer to members of the time series class $a$ as $T_a$. The learned metric should satisfy $F(T_a, T_a) < F(T_a, T_b)$ given $a \neq b$, where $a$ and $b$ are different classes. 
+
+% \subsection{Assumptions}
+
+% The method rests on two major assumptions. We assume all input time series are of fixed length and preprocess inputs which violate this assumption with zero-padding. Additionally, we assume that each time series example's label corresponds to the entire signal as opposed to a small subsequence. This disqualifies time series datasets in which long signals consist of tagged subsequences; for example, motion in a video.
+
+% We exclusively operate on time series which are sufficiently long and we define 'sufficiently long' as any time series of length $N$ where $N \geq 40$.  We justify this choice in the method section.
+
