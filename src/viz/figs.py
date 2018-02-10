@@ -28,7 +28,8 @@ from src.utils.files import ensure_dir_exists
 
 CAMERA_READY_FONT = 'DejaVu Sans'
 
-SAVE_DIR = os.path.expanduser('figs/')
+# SAVE_DIR = os.path.expanduser('figs/')
+SAVE_DIR = os.path.join('figs', 'paper')
 ensure_dir_exists(SAVE_DIR)
 
 ACC_PATH = 'placeholder-data/placeholder-acc-results.csv'
@@ -277,6 +278,55 @@ def pool_size_fig(kind='tsplot', **kwargs):
             kind=kind, **kwargs)
 
 
+def knn_vs_softmax_fig(save=True):
+    # TODO always show dsets in the same order
+    datasets = ['Trajectories', 'ArabicDigits', 'ECG', 'Libras', 'Wafer', 'Auslan']
+
+    knn_accuracies = [
+        [.9875666074600356, .9875666074600356, .9875666074600356],
+        [.9781619654231120, .9781619654231120, .9790718835304822],
+        [.8918918918918919, .8648648648648649, .8378378378378378],
+        [.9137931034482759, .8103448275862069, .6379310344827587],
+        [.9872881355932204, .9915254237288136, .9915254237288136],
+        [0, 0, 0]]
+    knn_accuracies = np.array(knn_accuracies)
+
+    cnn_accuracies = [.98579043, .96906281, .78378379, .51724136, .9915254, 0]
+    # unclear what these ones are for
+    max_pooling_accs = [85.44, 75.07, 75.68, 72.41, 97.46, 0.0]
+    multi_conv_accs = [99.11, 97.73, 83.78, 93.10, 96.61, 0.0]
+
+    fig, axes = plt.subplots(3, 2, figsize=(6, 8))
+
+    for i, name in enumerate(datasets):
+        knn_accs = knn_accuracies[i]
+        softmax_acc = cnn_accuracies[i]
+        softmax_accs = np.array([softmax_acc, softmax_acc, softmax_acc])
+        ax = axes.ravel()[i]
+
+        k = np.array([1, 3, 5])
+        ax.plot(k, knn_accs, marker='o', label='Knn', lw=2.5)
+        ax.plot(k, softmax_accs, '--', marker='o', label='Softmax')
+        ax.set_title(name)
+
+    for ax in axes[:, 0]:
+        ax.set_ylabel("Accuracy")
+    for ax in axes[-1, :]:
+        ax.set_xlabel("# Neighbors (k)")
+
+    leg_lines, leg_labels = axes.ravel()[-1].get_legend_handles_labels()
+    plt.figlegend(leg_lines, leg_labels, loc='lower center',
+                  ncol=2, labelspacing=0)
+
+    plt.suptitle("Knn Classifer vs Softmax", fontweight='bold')
+    plt.tight_layout()
+    plt.subplots_adjust(top=.92, bottom=.12)
+    if save:
+        save_fig_png('knn-vs-softmax')
+    else:
+        plt.show()
+
+
 # ================================================================ main
 
 def main():
@@ -290,7 +340,8 @@ def main():
     # pool_size_fig(kind='hist')
 
     # param_effects_fig()
-    param_effects_fig(supervised=False)
+    # param_effects_fig(supervised=False)
+    knn_vs_softmax_fig()
 
 
 if __name__ == '__main__':
