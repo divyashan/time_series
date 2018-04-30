@@ -84,11 +84,11 @@ def main():
     # # cd_diagram(pd.read_csv(ERR_RATES_PATH), lower_better=True)
     # # cd_diagram(pd.read_csv(WEASEL_PATH), lower_better=False)
     # # cd_diagram(pd.read_csv(DECADE_PATH), lower_better=False)
-    # # cd_diagram(pd.read_csv(UCR_PATH), lower_better=False)
+    cd_diagram(pd.read_csv(UCR_PATH), lower_better=False)
     # cd_diagram(pd.read_csv(UCI_PATH), lower_better=False)
-    cd_diagram(pd.read_csv(UCI_PATH_UNSUPERVISED), lower_better=False)
+    # cd_diagram(pd.read_csv(UCI_PATH_UNSUPERVISED), lower_better=False)
     # # cd_diagram(pd.read_csv(UCI_ALL_PATH), lower_better=False)
-    # plt.show()
+    plt.show()
     # return
 
     # pairwise_significance(pd.read_csv(UCI_PATH), lower_better=False)

@@ -1,0 +1,169 @@
+% \def\year{2018}\relax
+%File: formatting-instruction.tex
+
+% AAAI mandatory header
+% \documentclass[letterpaper]{article} %DO NOT CHANGE THIS
+% \usepackage{aaai18}  %Required
+% \usepackage{times}  %Required
+% \usepackage{helvet}  %Required
+% \usepackage{courier}  %Required
+% \usepackage{url}  %Required
+% \usepackage{graphicx}  %Required
+% \frenchspacing  %Required
+% \setlength{\pdfpagewidth}{8.5in}  %Required
+% \setlength{\pdfpageheight}{11in}  %Required
+% %PDF Info Is Required:
+% \pdfinfo{
+% 	/Title (A Convolutional Approach to Learning Time Series Similarity)
+% 	/Author (Anonymous)}
+% \setcounter{secnumdepth}{0}
+
+% % ICLR mandatory (?) header
+% \documentclass{article} % For LaTeX2e
+% \usepackage{iclr2018_conference,times}
+% \usepackage{hyperref}
+% \usepackage{url}
+
+%\iclrfinalcopy % Uncomment for camera-ready version, but NOT for submission.
+
+% KDD / ACM sigconf version
+\documentclass[sigconf]{acmart}
+\setcopyright{rightsretained}
+\acmDOI{10.475/123_4}
+\acmISBN{123-4567-24-567/08/06}
+\acmConference{KDD'19}{}{August 19--23, 2018, London, United Kingdom.}
+\acmYear{2018}
+\copyrightyear{2018}
+\fancyhead{}
+
+\input{setup.tex}  % our custom macros and config
+
+\begin{document}
+% The file aaai.sty is the style file for AAAI Press
+% proceedings, working notes, and technical reports.
+%
+\title{A Convolutional Approach to Learning Time Series Similarity}
+% \author{AAAI Press\\
+% Association for the Advancement of Artificial Intelligence\\
+% 2275 East Bayshore Road, Suite 160\\
+% Palo Alto, California 94303\\
+% }
+% \author{Anonymous Authors}
+
+\author{Divya Shanmugam}
+\affiliation{
+  \institution{Computer Science and Artificial \\ Intelligence Laboratory}
+  \institution{MIT}
+}
+\email{divyas@mit.edu}
+
+\author{Davis W. Blalock}
+\affiliation{
+  \institution{Computer Science and Artificial \\ Intelligence Laboratory}
+  \institution{MIT}
+}
+\email{dblalock@mit.edu}
+
+\author{John V. Guttag}
+\affiliation{
+  \institution{Computer Science and Artificial \\ Intelligence Laboratory}
+  \institution{MIT}
+}
+\email{guttag@mit.edu}
+
+\maketitle
+
+% ------------------------------------------------
+% CCS taxonomy stuff
+% ------------------------------------------------
+
+\begin{CCSXML}
+<ccs2012>
+% <concept>
+% <concept_id>10002950.10003648.10003671</concept_id>
+% <concept_desc>Mathematics of computing~Probabilistic algorithms</concept_desc>
+% <concept_significance>500</concept_significance>
+% </concept>
+<concept_id>10010147.10010257.10010293.10010294</concept_id>
+<concept_desc>Computing methodologies~Neural networks</concept_desc>
+<concept_significance>500</concept_significance>
+</concept>
+<concept>
+<concept_id>10002950.10003648.10003688.10003693</concept_id>
+<concept_desc>Mathematics of computing~Time series analysis</concept_desc>
+<concept_significance>300</concept_significance>
+</concept>
+<concept>
+<concept_id>10002950.10003648.10003688.10003696</concept_id>
+<concept_desc>Mathematics of computing~Dimensionality reduction</concept_desc>
+<concept_significance>300</concept_significance>
+</concept>
+\end{CCSXML}
+
+\ccsdesc[500]{Computing methodologies~Neural networks}
+\ccsdesc[300]{Mathematics of computing~Time series analysis}
+\ccsdesc[300]{Mathematics of computing~Dimensionality reduction}
+
+% ------------------------------------------------
+\begin{abstract}
+% ------------------------------------------------
+
+Computing distances between examples is at the core of many learning algorithms for time series. Consequently, a great deal of work has gone into designing effective time series distance measures. We present Jiffy, a simple and scalable distance metric for multivariate time series. Our approach is to reframe the task as a representation learning problem---rather than design an elaborate distance function, we use a CNN to learn an embedding such that the Euclidean distance is effective. By aggressively max-pooling and downsampling, we are able to construct this embedding using a highly compact neural network. Experiments on a diverse set of multivariate time series datasets show that our approach consistently outperforms existing methods.
+
+\end{abstract}
+
+
+% ================================================================
+\section{Introduction} \label{sec:intro}
+% ================================================================
+
+\input{intro.tex}
+
+% ================================================================
+\section{Problem Definition} \label{sec:problem}
+% ================================================================
+
+\input{problem.tex}
+
+% ================================================================
+\section{Related Work} \label{sec:relatedWork}
+% ================================================================
+
+\input{related_work.tex}
+
+% ================================================================
+\section{Method} \label{sec:method}
+% ================================================================
+
+\input{method.tex}
+
+% ================================================================
+\section{Experiments} \label{sec:experiments}
+% ================================================================
+
+\input{results.tex}
+
+
+% ================================================================
+\section{Hyperparameter Effects} \label{sec:network}
+% ================================================================
+
+\input{network.tex}
+
+% ================================================================
+\vspace{-1mm}
+\section{Conclusion} \label{sec:conclusion}
+% ================================================================
+
+We present Jiffy, a simple and efficient metric learning approach to measuring multivariate time series similarity. We show that our method learns a metric that leads to consistent and accurate classification across a diverse range of multivariate time series. Jiffy's resilience to hyperparameter choices and consistent performance across domains provide strong evidence for its utility on a wide range of time series datasets.
+
+Future work includes the extension of this approach to multi-label classification and unsupervised learning. There is also potential to further increase Jiffy's speed by replacing the fully connected layer with a structured \citep{structuredMats} or binarized \citep{xnornet} matrix. % during both training and inference time.
+
+% \bibliographystyle{aaai}
+% \bibliographystyle{abbrev}
+% \bibliographystyle{iclr2018_conference}
+% \bibliography{doc}
+\bibliographystyle{ACM-Reference-Format}
+\bibliography{main}
+
+\end{document}

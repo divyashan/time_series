@@ -1,0 +1,160 @@
+% Most of the aforementioned metric learning approaches apply to multivariate time series, but nearly all of the hand-crafted distance measures and representations are designed exclusively for univariate time series.
+
+% Most could be generalized to multivariate time series in some fashion, but it is far from obvious how best to do so. For example, the Shotgun distance is based on the minimum distance between pairs of subsequences taken from each of the two time series; should the multivariate generalization take this minimum separately for each variable and sum them? Or take the minimum of these minima (or max, or median)? It could also define the subsequences to include all variables at once, or subsets of variables that are correlated, etc. In short, even for a relatively simple distance measure, the generalization to multiple variables is non-trivial.
+
+% Because of both this and a desire to be consistent with previous time series metric learning works, we omit comparisons to univariate approaches when operating on multivariate data.
+
+Before describing our experiments, we first note that, to ensure easy reproduction and extension of our work, all of our code is freely available.\footnote{http://smarturl.it/jiffy} All of the datasets used are public, and we provide code to clean and operate on them.
+
+We evaluate Jiffy-produced embeddings through the task of 1-nearest-neighbor classification, which assesses the extent to which time series sharing the same label tend to be nearby in the embedded space. We choose this task because it is the most widely used benchmark for time series distance and similarity measures \citep{tsBakeoff2008,bakeoff2016}. % we would like the ``closest'' training point to a testing point in the embedded space to have the same label. % Our second set of experiments tests Jiffy in the absence of labels. In the unlabeled scenario, the ideal clustering would recreate the true labels of the data.
+
+% We validate the classification accuracy and clustering purity of our model with six multivariate datasets sourced from a diverse range of domains. 
+
+% ------------------------------------------------
+\subsection{Datasets}
+% ------------------------------------------------
+
+To enable direct comparison to existing methods, we benchmark Jiffy using datasets employed by \citet{mddtw}. These datasets are taken from various domains and exhibit high variability in the numbers of classes, examples, and variables. We briefly describe each dataset below, and summarize statistics about each in Table~\ref{tbl:dsets}. % Due to the absence of public implementations in certain cases, we restrict our evaluation to datasets with publicly available results.
+
+\vspace{6mm}
+\begin{table*}[h]
+  \centering
+  \caption{Summary of Multivariate Time Series Datasets.}
+  \label{tbl:dsets}
+\begin{tabular}{l|c|c|c|c}
+Dataset & \# Variables & \# Classes & Length & \# Time Series  \\
+\hline
+% EDIT: dont use the tiny datasets
+% JapaneseVowels          & 12  	& 9  & 7-29 	& 640 	\\
+% PenDigits            	& 2    	& 10 & 8 		& 10992 \\
+Libras                	& 2    	& 15 & 45 		& 360 	\\
+AUSLAN                  & 22    & 25 & 47-95 	& 675  	\\
+CharacterTrajectories	& 3    	& 20 & 109-205 	& 2858 	\\ 
+ArabicDigits 			& 13 	& 10 & 4 - 93 	& 8800	\\
+ECG 					& 2    	& 2  & 39 - 152 & 200	\\
+Wafer 					& 6    	& 2  & 104 - 198 & 1194	\\
+% RobotEF - LP1 			& 6    	& 4  & 15 		& 88	\\
+% RobotEF - LP2 			& 6    	& 5  & 15 		& 47	\\
+% RobotEF - LP3 			& 6    	& 4  & 15 		& 47	\\
+% RobotEF - LP4 			& 6    	& 3  & 15 		& 117	\\
+% RobotEF - LP5 			& 6    	& 5  & 15 		& 164	\\
+\end{tabular}
+\label{tab:2}
+% \vspace{4mm}
+\end{table*}
+
+\begin{itemize}
+\item \textbf{ECG}: Electrical recordings of normal and abnormal heartbeats, as measured by two electrodes on the patients' chests.
+\item \textbf{Wafer}: Sensor data collected during the manufacture of semiconductor microelectronics, where the time series are labeled as normal or abnormal.
+\item \textbf{AUSLAN}: Hand and finger positions during the performance of various signs in Australian Sign Language, measured via instrumented gloves.
+\item \textbf{Trajectories}: Recordings of pen (x,y) position and force application as different English characters are written with a pen. 
+\item \textbf{Libras}: Hand and arm positions during the performance of various signs in Brazilian Sign Language, extracted from videos.
+\item \textbf{ArabicDigits}: Audio signals produced by utterances of Arabic digits, represented by Mel-Frequency Cepstral Coefficients.
+\end{itemize}
+
+% We also use 10 datasets from the UCR Time Series Archive to demonstrate the stability of our supervised model across parameter choice.
+
+% % ------------------------------------------------
+% \subsection{Supervised Learning}
+% % ------------------------------------------------
+% We compared our method to a number of existing methods for the task of 1-nearest neighbor classification. We chose this task because it is widely used to benchmark time series distance measures \citep{tsBakeoff2008,bakeoff2016,mddtw}. Below, we briefly describe each method % briefly. before interpreting our results. % On subsequent experiments related to architectural considerations, we chose 10 UCR datasets to test all algorithms over. 
+
+% ================================
+% \subsubsection{Comparison Approaches}
+\subsection{Comparison Approaches}
+% ================================
+We compare to recent approaches to time series metric learning, as well as popular means of generalizing DTW to the multivariate case: % We restrict our evaluation to approaches with published results on the tested datasets, source code provided by the authors, or sufficient simplicity that we could confidently reimplement them.
+
+\begin{enumerate}
+\item \textbf{MDDTW} \citep{mddtw} - MDDTW compares time series using a combination of DTW and the Mahalanobis distance. It learns the precision matrix for the latter using a triplet loss.
+\item \textbf{Siamese RNN} \citep{siameseRecurrent} - The Siamese RNN feeds each time series through a recurrent neural network and uses the hidden unit activations as the embedding. It trains by feeding pairs of time series through two copies of the network and computing errors based on their inner products in the embedded space.
+\item \textbf{Siamese CNN} The Siamese CNN is similar to the Siamese RNN, but uses convolutional, rather than recurrent, neural networks. This approach has proven successful across several computer vision tasks \citep{siameseOrig,taigman2014deepface}. 
+\item \textbf{DTW-I}, \textbf{DTW-D} - As pointed out by \citet{nontrivial}, there are two straightforward ways to generalize DTW to multivariate time series. The first is to treat the time series as $D$ independent sequences of scalars (DTW-I). In this case, one computes the DTW distance for each sequence separately, then sums the results. The second option is to treat the time series as one sequence of vectors (DTW-D). In this case, one runs DTW a single time, with elementwise distances equal to the squared Euclidean distances between the $D$-dimensional elements.
+ \item \textbf{Zero Padding} - One means of obtaining a fixed-size vector representation of a multivariate time series is to zero-pad such that all time series are the same length, and then treat the ``flattened'' representation as a vector.
+ \item \textbf{Upsampling} - Like Zero Padding, but upsamples to the length of the longest time series rather than appending zeros. This approach is known to be effective for univariate time series \citep{everythingWrongDTW}.
+\end{enumerate}
+
+% ================================
+% \subsubsection{Results}
+\subsection{Accuracy}
+% ================================
+ % Below, we briefly describe each method % briefly. before interpreting our results. % On subsequent experiments related to architectural considerations, we chose 10 UCR datasets to test all algorithms over. 
+
+As shown in Table~\ref{tbl:results}, we match or exceed the performance of all comparison methods on each of the six datasets. Although it is not possible to claim statistical significance in the absence of more datasets (see \cite{cdDiagrams}), the average rank of our method compared to others is higher than its closest competitors at 1.16. The closest second, DTW-I, has an average rank of 3.33 over these six datasets.
+ 
+Not only does Jiffy attain higher classification accuracies than competing methods, but the method also remains consistent in its performance across datasets. This can most easily be seen through the standard deviation in classification accuracies across datasets for each method. Jiffy's standard deviation in accuracy (0.026) is approximately a third of DTWI's (0.071). The closest method in terms of variance is MDDTW with a standard deviation of 0.042 , which exhibits a much lower rank than our method. This consistency suggests that Jiffy generalizes well across domains, and would likely remain effective on other datasets not tested here.
+
+\vspace{5mm}
+\begin{table*}[h] % each row is an algorithm/model; each col is a dataset
+  \centering
+  \caption{1NN Classification Accuracy. The proposed method equals or exceeds the accuracies of all others on every dataset.}
+\label{tbl:results} % label needs to go after caption
+\begin{tabular*}{\textwidth}{l|c|ccccccc}
+Dataset                & Jiffy      & MDDTW & DTW-D  & DTW-I     & \makecell{Siamese \\ CNN} & \makecell{Siamese \\ RNN} & \makecell{Zero \\ Pad} & Upsample \\
+\hline
+ArabicDigits           & \b{0.974}  & 0.969 &  0.963 & \b{0.974} &    0.851   & 0.375      &    0.967   &   0.898   \\
+AUSLAN                 & \b{1.000}  & 0.959 &  0.900 & \b{1.000} & \b{1.000}  & \b{1.000}  &\b{1.000}   & \b{1.000} \\
+ECG                    & \b{0.925}  & 0.865 &  0.825 &    0.810  &    0.756   & 0.659      &    0.820   &   0.820   \\
+Libras                 & \b{1.000}  & 0.908 &  0.905 &    0.979  &    0.280   & 0.320      &    0.534   &   0.534   \\
+Trajectories           & \b{0.979}  & 0.961 &  0.956 &    0.972  &    0.933   & 0.816      &    0.936   &   0.948   \\
+Wafer                  & \b{0.992}  & 0.988 &  0.984 &    0.861  &    0.968   & 0.954      &    0.945   &   0.936   \\
+\hhline{=|=|=======}
+ Mean Rank              & \b{1.67}   & 3.67  & 4.67   & 3.33      &  6.0       & 6.5        &  4.17      & 4.5     \\
+\end{tabular*}
+\vspace{4mm}
+\end{table*}
+
+% % ------------------------------------------------
+% \subsection{Unsupervised Learning}
+% % ------------------------------------------------
+
+% More often than not, multivariate time series exist unlabeled, with no known set of classes. Even in the labeled case, there may be \textit{too many} labels. This is especially prevalent in medicine, where the notion of similarity between patients is important to such tasks as cohort selection, diagnosis, and treatment but but the process of labeling is heavily noisy.  We examine the performance of our model on the clustering task to demonstrate its value in unsupervised settings.
+
+% % ================================
+% \subsubsection{Comparison Approaches}
+% % ================================
+
+% We compare our model to four recent approaches to unsupervised time series clustering. The algorithms we compare to operate on the basis of unsupervised representation learning. Additionally, we include both the zero-padded representation of the multivariate time series and the up-sampled representation as a baseline comparison. Each competing algorithm's methodology is described briefly below: 
+
+% \begin{enumerate}
+% \item \textbf{LDPS} \citep{ldps} - LDPS uses a single-layer CNN to embed time series such that the Euclidean distance between time series $T_a$ and $T_b$ in the transformed space approximates the DTW distance between $T_a$ and $T_b$ in the original space. 
+% \item \textbf{SPIRAL} \citep{spiral} - SPIRAL is similar to LDPS in that it learns a time series feature space in which DTW similarity is preserved. Notably, SPIRAL's approach is based on matrix factorization.
+% \item \textbf{Zero Padding} - One means of obtaining a fixed-size vector representation of a multivariate time series is to zero-pad such that all time series are the same length, and then treat the ``flattened'' representation as a vector.
+% \item \textbf{Upsampling} - Like Zero Padding, but upsamples to the length of the longest time series rather than appending zeros. This approach is known to be effective for univariate time series \citep{everythingWrongDTW}.
+% % \item \textbf{U-Shape} \citep{ushapelets} - U-Shape creates and iteratively refines clusters by repeatedly dividing the dataset using entropy-reducing shapelets. 
+% \end{enumerate}
+
+% % ================================
+% \subsubsection{Results}
+% % ================================
+
+% We evaluate our method using the Rand Index, a common cluster evaluation metric. As Table \ref{tbl:clusteringResults} demonstrates, Jiffy achieves higher clustering purities than all competing methods, save for the upsampling baseline. We may draw the following conclusions from our results:
+
+% \begin{itemize}
+% 	\item Given the competitive performance of the upsampling baseline, it is important to note that the objective of our work is to build a generalizable metric for multiple machine learning tasks. The upsampling baseline performs very poorly in the classification task, implying that Euclidean distance in the original, untransformed space does not adequately describe similarity between multivariate time series.
+%     \item Both SPIRAL and LDPS, our primary comparison methods, demonstrate a lower rank than the two baselines we have chosen as well. This speaks to their potential specialization to univariate time series.
+%     \item The dimensionality across each of the representations learned by each of these methods varies greatly. For example, the upsampling baseline uses 615 features for each multivariate time series instance in the CharacterTrajectories dataset. On the other hand, Jiffy uses only 2 and produces a superior clustering.
+% \end{itemize}
+
+% \begin{table}[h]
+%   \centering
+% \begin{tabular}{l|c|cccc}
+% Dataset                 &  Jiffy    & LDPS      & SPIRAL & Zero-Padding & Upsampling \\
+% \hline
+% ArabicDigits            &    0.849  &    0.826  & 0.870  &    0.887     & \b{0.928} \\
+% AUSLAN                  & \b{0.990} & \b{0.990} & 0.868  &    0.982     &    0.982  \\
+% CharacterTrajectories   & \b{0.965} &    0.939  & 0.886  & \b{0.965}    &    0.959  \\
+% ECG                     &    0.586  &    0.550  & 0.505  &    0.581     & \b{0.627} \\
+% Libras                  &    0.883  &    0.870  & 0.881  & \b{0.885}     &\b{0.885} \\
+% Wafer                   & \b{0.746} &    0.554  & 0.448  &    0.500     &    0.596  \\
+% \hhline{=|=|====}
+% \b{Mean Rank}		& 	2.0	&	3.67		& 4.5	&	2.5		&	\b{1.83}
+% \end{tabular}
+
+% \vspace{4mm}
+% \caption{Rand Indices of k-means clustering using various learned representations. Despite having no labels and reducing the dimensionality by orders of magnitude relative to the zero-padded or upsampled data, Jiffy yields no loss in performance. Jiffy also equals or outperforms existing unsupervised representation learning methods. } %It is important to note that the upsampled and zero-padded representation of Libras are the same because its a fixed length dataset.}
+% \label{tbl:clusteringResults}
+% \end{table}
+
+
+
