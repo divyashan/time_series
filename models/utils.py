@@ -181,10 +181,24 @@ def dist(x, y):
 
 def evaluate_test_embedding(train_embedding, tr_y, test_embedding, test_y):
     n_correct = 0.0
+    n_correct_1 = 1.0
+    correct_distances = []
+    incorrect_distances = []
     for sample, correct_label in zip(test_embedding, test_y):
-        label = classify_sample(sample, train_embedding, tr_y)
+        label, distance = classify_sample(sample, train_embedding, tr_y)
         if label == correct_label:
             n_correct += 1.0
+            if label == 1:
+              n_correct_1 += 1
+            correct_distances.append(distance)
+        else:
+          incorrect_distances.append(distance)
+
+    #pdb.set_trace()
+    print "Mean correct distance: ", np.mean(correct_distances)
+    print "Mean incorrect distance: ", np.mean(incorrect_distances)
+    print "N Correct 1: ", n_correct_1
+    print "N Correct 0: ", n_correct - n_correct_1
     return n_correct/len(test_y)
 
 def evaluate_train_embedding(train_embedding, tr_y):
@@ -214,7 +228,7 @@ def evaluate_KNN(train_embedding, tr_y, test_embedding, test_y, k=1):
 
 def classify_sample(output, train_embedding, tr_y):
     dists = [np.linalg.norm(output-row) for row in train_embedding]
-    return tr_y[np.argmin(dists)]
+    return tr_y[np.argmin(dists)], np.min(dists)
 
 
 def standardize_ts_lengths(X, n):
