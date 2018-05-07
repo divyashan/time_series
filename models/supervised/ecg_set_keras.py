@@ -56,14 +56,14 @@ def siamese_model( img_shape, tower_model, n_inputs ):
 
 
 
-"""
+
 tower = siamese_tower((256, 1), 'tower')
 jj = siamese_model((256, 1), tower, 1000 )
 jj.compile(loss='binary_crossentropy', optimizer='adam', metrics=['accuracy'])
-"""
-X_train, y_train, X_test, y_test = loadECG()
-X_train = np.swapaxes(X_train, 1, 2)
-X_test = np.swapaxes(X_test, 1, 2)
+
+X_train, y_train, X_test, y_test = loadECG(mode="set")
+X_train = np.expand_dims(X_train, 3)
+X_test = np.expand_dims(X_test, 3)
 
 pdb.set_trace()
-jj.fit(x=[x for x in X_train], y=[1], epochs=10)
+jj.fit(x=[x for x in X_train], y=[[1],[1],[0],[0]], epochs=10)
