@@ -9,7 +9,7 @@ import sys
 import pdb
 
 sys.path.insert(0, '../')
-from time_series.parse_dataset.readECG import loadECG_set
+from time_series.parse_dataset.readECG import loadECG
 
 POOL_PCTG = .05
 POOL_SIZE = 10

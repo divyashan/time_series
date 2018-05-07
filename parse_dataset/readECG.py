@@ -133,7 +133,7 @@ def loadECG(mode=None):
 		pdb.set_trace()
 		y_train = np.concatenate([np.ones((len(train_death_patients), 1)), np.zeros((len(train_normal_patients), 1))])
 		X_test, y_test = test[:,:,2:], test[:,:,1]
-		y_test = np.concatenate([np.ones((len(test_death_patients), 1)), np.zeros((len(test_normal_patients, 1)))])
+		y_test = np.concatenate([np.ones((len(test_death_patients), 1)), np.zeros((len(test_normal_patients), 1))])
 
 
 		pdb.set_trace()
