@@ -9,7 +9,7 @@ import sys
 import pdb
 
 sys.path.insert(0, '../')
-from time_series.parse_dataset.readECG import loadECG
+from time_series.parse_dataset.readECG import loadECG_set
 
 POOL_PCTG = .05
 POOL_SIZE = 10
@@ -56,14 +56,14 @@ def siamese_model( img_shape, tower_model, n_inputs ):
 
 
 
-"""
 tower = siamese_tower((256, 1), 'tower')
 jj = siamese_model((256, 1), tower, 1000 )
 jj.compile(loss='binary_crossentropy', optimizer='adam', metrics=['accuracy'])
-"""
-X_train, y_train, X_test, y_test = loadECG()
+
+X_train, y_train, X_test, y_test = loadECG_set()
 X_train = np.swapaxes(X_train, 1, 2)
 X_test = np.swapaxes(X_test, 1, 2)
 
 pdb.set_trace()
-jj.fit(x=[x for x in X_train], y=[1], epochs=10)
+for i in range(400):
+	jj.fit(x=[x for x in X_train], y=[1], epochs=10)

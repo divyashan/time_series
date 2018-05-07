@@ -56,11 +56,10 @@ def siamese_model( img_shape, tower_model, n_inputs ):
 
 
 
-"""
 tower = siamese_tower((256, 1), 'tower')
 jj = siamese_model((256, 1), tower, 1000 )
 jj.compile(loss='binary_crossentropy', optimizer='adam', metrics=['accuracy'])
-"""
+
 X_train, y_train, X_test, y_test = loadECG()
 X_train = np.swapaxes(X_train, 1, 2)
 X_test = np.swapaxes(X_test, 1, 2)

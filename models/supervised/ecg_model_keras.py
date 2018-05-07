@@ -19,7 +19,7 @@ from time_series.models.ecg_utils import get_all_adjacent_beats
 
 POOL_PCTG = .05
 STRIDE_WIDTH = 10
-FILTER_SIZE = 10
+FILTER_SIZE = 50
 PADDED_LENGTH = 260
 
 """Hyperparameters"""
@@ -88,11 +88,11 @@ np.random.shuffle(new_order)
 X_test = X_test[new_order]
 y_test = y_test[new_order]
 
-X_test = X_test[np.where(y_test == 1)[0]]
-y_test = y_test[np.where(y_test == 1)[0]]
-
+#X_test = X_test[np.where(y_test == 1)[0]]
+#y_test = y_test[np.where(y_test == 1)[0]]
+print("loaded data")
 for i in range(400):
-	m.fit(x=X_train, y=y_train, validation_data=(X_test, y_test), epochs=10)
+	m.fit(x=X_train, y=y_train, validation_data=(X_test, y_test), epochs=1, verbose=True)
 	test_embedding = embedding_m.predict(X_test)
 	pdb.set_trace()
 
