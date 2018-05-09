@@ -11,19 +11,23 @@ import numpy as np
 import sys
 import pdb
 import matplotlib.pyplot as plt
-
+from sklearn.neighbors import NearestNeighbors
+from sklearn.metrics import roc_auc_score
+import h5py
 
 sys.path.insert(0, '../')
 from time_series.parse_dataset.readECG import loadECG
 from time_series.models.ecg_utils import get_all_adjacent_beats
+from time_series.models.supervised.ecg_fi_model_keras import build_fi_model 
+from time_series.models.supervised.ecg_fc import build_fc_model
 
 POOL_PCTG = .05
-STRIDE_WIDTH = 10
-FILTER_SIZE = 50
+STRIDE_WIDTH = 1
+FILTER_SIZE = 100
 PADDED_LENGTH = 260
 
 """Hyperparameters"""
-num_filt_1 = 2    #Number of filters in first conv layer
+num_filt_1 = 5     #Number of filters in first conv layer
 num_fc_1 = 2       #Number of neurons in fully connected layer
 num_fc_0 = 2
 max_iterations = 4000
@@ -70,11 +74,19 @@ test_death_ids = np.array([5616, 5687, 5908, 5964, 6160, 6311, 760, 832, 854, 96
  
 
 
-m, embedding_m = build_model((256, 1))
+m, embedding_m = build_fc_model((256, 1))
 m.compile(loss='binary_crossentropy', optimizer='adam', metrics=['accuracy'])
 m.summary()
 
-X_train, y_train, X_test, y_test = loadECG()
+if len(sys.argv)  == 1:
+	X_train, y_train, X_test, y_test = loadECG()
+else:
+	hf = h5py.File('data.h5', 'r')
+	X_train = np.array(hf.get('X_train'))
+	y_train = np.array(hf.get('y_train'))
+	X_test = np.array(hf.get('X_test'))
+	y_test = np.array(hf.get('y_test')) 
+
 X_train = np.swapaxes(X_train, 1, 2)
 X_test = np.swapaxes(X_test, 1, 2)
 
@@ -87,13 +99,21 @@ new_order = np.arange(len(X_test))
 np.random.shuffle(new_order)
 X_test = X_test[new_order]
 y_test = y_test[new_order]
+X_val = X_test[:30000]
+y_val = y_test[:30000]
 
 #X_test = X_test[np.where(y_test == 1)[0]]
 #y_test = y_test[np.where(y_test == 1)[0]]
 print("loaded data")
 for i in range(400):
-	m.fit(x=X_train, y=y_train, validation_data=(X_test, y_test), epochs=1, verbose=True)
+	m.fit(x=X_train, y=y_train, validation_data=(X_val, y_val), epochs=10, verbose=True)
 	test_embedding = embedding_m.predict(X_test)
+	train_embedding = embedding_m.predict(X_train)
+	nbrs = NearestNeighbors(n_neighbors=1, algorithm='ball_tree').fit(train_embedding)
+	_, indices = nbrs.kneighbors(test_embedding)
 	pdb.set_trace()
+	#difference = y_train[indices] - y_test
+	
+	#pctg_correct = len([x for x in difference if x == 0])/float(len(difference)) 
 
 print("lol")
