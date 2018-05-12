@@ -20,7 +20,9 @@ from time_series.parse_dataset.readECG import loadECG
 from time_series.models.ecg_utils import get_all_adjacent_beats
 from time_series.models.supervised.ecg_fi_model_keras import build_fi_model 
 from time_series.models.supervised.ecg_fc import build_fc_model
+from time_series.models.gpu_utils import restrict_GPU_keras
 
+restrict_GPU_keras(["0"])
 POOL_PCTG = .05
 STRIDE_WIDTH = 1
 FILTER_SIZE = 100
