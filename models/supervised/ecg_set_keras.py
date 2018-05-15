@@ -63,4 +63,6 @@ X_train = np.expand_dims(X_train, 3)
 X_test = np.expand_dims(X_test, 3)
 
 pdb.set_trace()
-jj.fit(x=[x for x in X_train], y=[[1],[1],[0],[0]], epochs=10)
+for i in range(400):
+	jj.fit(x=[x for x in X_train], y=[[1],[1],[0],[0]], epochs=10)
+	pdb.set_trace()
