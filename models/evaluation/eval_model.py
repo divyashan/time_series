@@ -3,11 +3,12 @@ import pdb
 from keras.models import load_model
 import sys
 import h5py
+from sklearn.metrics import roc_auc_score
 
 sys.path.insert(0, '../')
 
-m = load_model("saved_models/fc_2")
-embedding_m = load_model("saved_models/fc_embedding_2")
+m = load_model("fc_3")
+embedding_m = load_model("fc_embedding_3")
 
 hf = h5py.File('train_test', 'r')
 train = np.expand_dims(np.array(hf.get('train')), 2)
