@@ -26,7 +26,7 @@ html5lib==0.9999999
 idna==2.6
 ipaddress==1.0.18
 ipykernel==4.6.1
-ipython==5.5.0
+ipython==7.16.3
 ipython-genutils==0.2.0
 joblib==0.11
 jupyter-client==5.1.0
