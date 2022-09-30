@@ -28,7 +28,7 @@ ipaddress==1.0.18
 ipykernel==4.6.1
 ipython==5.5.0
 ipython-genutils==0.2.0
-joblib==0.11
+joblib==1.2.0
 jupyter-client==5.1.0
 jupyter-core==4.4.0
 Keras==2.0.8
